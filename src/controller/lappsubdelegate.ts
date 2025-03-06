@@ -13,7 +13,7 @@ export class LAppSubdelegate {
   private _glManager: LAppGlManager;
   private _live2dManager: LAppLive2DManager;
   private _resizeObserver: ResizeObserver;
-  // private _captured: boolean;
+  private _captured: boolean;
   private _needResize: boolean;
   public constructor() {
     this._canvas = null;
@@ -22,7 +22,7 @@ export class LAppSubdelegate {
     this._live2dManager = new LAppLive2DManager();
     this._view = new LAppView();
     this._frameBuffer = null;
-    // this._captured = false;
+    this._captured = false;
   }
 
   public initialize(canvas: HTMLCanvasElement): boolean {
@@ -193,6 +193,70 @@ export class LAppSubdelegate {
     if (LAppDefine.CanvasSize === "auto") {
       this._needResize = true;
     }
+  }
+
+  /**
+   * 鼠标点击，触摸触摸时
+   */
+  public onPointBegan(pageX: number, pageY: number): void {
+    if (!this._view) {
+      LAppPal.printMessage("view notfound");
+      return;
+    }
+    this._captured = true;
+
+    const localX: number = pageX - this._canvas.offsetLeft;
+    const localY: number = pageY - this._canvas.offsetTop;
+
+    this._view.onTouchesBegan(localX, localY);
+  }
+
+  /**
+   * 当鼠标指针移动时
+   */
+  public onPointMoved(pageX: number, pageY: number): void {
+    if (!this._captured) {
+      return;
+    }
+
+    const localX: number = pageX - this._canvas.offsetLeft;
+    const localY: number = pageY - this._canvas.offsetTop;
+
+    this._view.onTouchesMoved(localX, localY);
+  }
+
+  /**
+   * 点击结束后
+   */
+  public onPointEnded(pageX: number, pageY: number): void {
+    this._captured = false;
+
+    if (!this._view) {
+      LAppPal.printMessage("view notfound");
+      return;
+    }
+
+    const localX: number = pageX - this._canvas.offsetLeft;
+    const localY: number = pageY - this._canvas.offsetTop;
+
+    this._view.onTouchesEnded(localX, localY);
+  }
+
+  /**
+   * 触摸被取消
+   */
+  public onTouchCancel(pageX: number, pageY: number): void {
+    this._captured = false;
+
+    if (!this._view) {
+      LAppPal.printMessage("view notfound");
+      return;
+    }
+
+    const localX: number = pageX - this._canvas.offsetLeft;
+    const localY: number = pageY - this._canvas.offsetTop;
+
+    this._view.onTouchesEnded(localX, localY);
   }
 
   public getCanvas(): HTMLCanvasElement {

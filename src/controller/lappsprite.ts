@@ -150,6 +150,27 @@ export class LAppSprite {
     );
   }
 
+  /**
+   * 释放
+   */
+  public release(): void {
+    this._rect = null;
+
+    const gl = this._subdelegate.getGlManager().getGl();
+
+    gl.deleteTexture(this._texture);
+    this._texture = null;
+
+    gl.deleteBuffer(this._uvBuffer);
+    this._uvBuffer = null;
+
+    gl.deleteBuffer(this._vertexBuffer);
+    this._vertexBuffer = null;
+
+    gl.deleteBuffer(this._indexBuffer);
+    this._indexBuffer = null;
+  }
+
   public setSubdelegate(subdelegate: LAppSubdelegate): void {
     this._subdelegate = subdelegate;
   }

@@ -59,8 +59,8 @@ export const PriorityForce = 3;
 // export const MOCConsistencyValidationEnable = true;
 
 // 调试日志显示选项
-export const DebugLogEnable = true;
-// export const DebugTouchLogEnable = false;
+export const DebugLogEnable = true; // debug日志
+export const DebugTouchLogEnable = false; // 鼠标日志
 
 // 从框架输出的日志级别设置
 export const CubismLoggingLevel: LogLevel = LogLevel.LogLevel_Verbose;

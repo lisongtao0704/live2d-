@@ -3,14 +3,14 @@ import { CubismViewMatrix } from "@framework/math/cubismviewmatrix";
 
 import * as LAppDefine from "./lappdefine";
 // import { LAppDelegate } from './lappdelegate';
-// import { LAppPal } from './lapppal';
+import { LAppPal } from "./lapppal";
 import { LAppSprite } from "./lappsprite";
 import { TextureInfo } from "./lapptexturemanager";
-// import { TouchManager } from './touchmanager';
+import { TouchManager } from "./touchmanager";
 import { LAppSubdelegate } from "./lappsubdelegate";
 
 export class LAppView {
-  // private _touchManager: TouchManager; // タッチマネージャー
+  private _touchManager: TouchManager; // 触摸管理器
   private _deviceToScreen: CubismMatrix44;
   private _viewMatrix: CubismViewMatrix;
   private _programId: WebGLProgram; // 着色器标识id
@@ -24,7 +24,7 @@ export class LAppView {
     this._programId = null;
     this._back = null;
     // this._gear = null;
-    // this._touchManager = new TouchManager();
+    this._touchManager = new TouchManager();
     this._deviceToScreen = new CubismMatrix44();
     this._viewMatrix = new CubismViewMatrix();
   }
@@ -60,6 +60,21 @@ export class LAppView {
       LAppDefine.ViewLogicalMaxBottom,
       LAppDefine.ViewLogicalMaxTop
     );
+  }
+
+  /**
+   *  释放
+   */
+  public release(): void {
+    this._viewMatrix = null;
+    this._touchManager = null;
+    this._deviceToScreen = null;
+
+    this._back.release();
+    this._back = null;
+
+    this._subdelegate.getGlManager().getGl().deleteProgram(this._programId);
+    this._programId = null;
   }
 
   public initializeSprite(): void {
@@ -134,5 +149,86 @@ export class LAppView {
 
       lapplive2dmanager.onUpdate();
     }
+  }
+
+  /**
+   * 将X坐标转换为View坐标。
+   *
+   * @param deviceX设备X坐标
+   */
+  public transformViewX(deviceX: number): number {
+    const screenX: number = this._deviceToScreen.transformX(deviceX); // 获取逻辑坐标转换后的坐标。
+    return this._viewMatrix.invertTransformX(screenX); // 放大、缩小和移动后的值。
+  }
+
+  /**
+   * 将Y坐标转换为View坐标。
+   *
+   * @param deviceY 设备Y坐标
+   */
+  public transformViewY(deviceY: number): number {
+    const screenY: number = this._deviceToScreen.transformY(deviceY); // 获取逻辑坐标转换后的坐标
+    return this._viewMatrix.invertTransformY(screenY);
+  }
+
+  /**
+   * 点击触摸时
+   *
+   * @param pointX 屏幕X坐标
+   * @param pointY 屏幕Y坐标
+   */
+  public onTouchesBegan(pointX: number, pointY: number): void {
+    this._touchManager.touchesBegan(
+      pointX * window.devicePixelRatio,
+      pointY * window.devicePixelRatio
+    );
+  }
+
+  /**
+   * 触摸时指针移动时被称为。
+   *
+   * @param pointX 屏幕X坐标
+   * @param pointY 屏幕Y坐标
+   */
+  public onTouchesMoved(pointX: number, pointY: number): void {
+    const posX = pointX * window.devicePixelRatio;
+    const posY = pointY * window.devicePixelRatio;
+
+    const lapplive2dmanager = this._subdelegate.getLive2DManager();
+
+    const viewX: number = this.transformViewX(this._touchManager.getX());
+    const viewY: number = this.transformViewY(this._touchManager.getY());
+
+    this._touchManager.touchesMoved(posX, posY);
+
+    lapplive2dmanager.onDrag(viewX, viewY);
+  }
+
+  /**
+   *  触摸结束后被叫。
+   *
+   * @param pointX  屏幕X坐标
+   * @param pointY  屏幕Y坐标
+   */
+  public onTouchesEnded(pointX: number, pointY: number): void {
+    const posX = pointX * window.devicePixelRatio;
+    const posY = pointY * window.devicePixelRatio;
+
+    const lapplive2dmanager = this._subdelegate.getLive2DManager();
+
+    // 触摸结束
+    lapplive2dmanager.onDrag(0.0, 0.0);
+
+    const x: number = this.transformViewX(posX);
+    const y: number = this.transformViewY(posY);
+
+    if (LAppDefine.DebugTouchLogEnable) {
+      LAppPal.printMessage(`[APP]touchesEnded x: ${x} y: ${y}`);
+    }
+    lapplive2dmanager.onTap(x, y);
+    // // 歯車にタップしたか
+    // if (this._gear.isHit(posX, posY)) {
+    //   lapplive2dmanager.nextScene();
+    // }
   }
 }
