@@ -7,25 +7,25 @@ export const CanvasSize: { width: number; height: number } | "auto" = "auto";
 export const CanvasNum = 1;
 
 // 画面
-// export const ViewScale = 1.0;
-// export const ViewMaxScale = 2.0;
-// export const ViewMinScale = 0.8;
+export const ViewScale = 1.0;
+export const ViewMaxScale = 2.0;
+export const ViewMinScale = 0.8;
 
-// export const ViewLogicalLeft = -1.0;
-// export const ViewLogicalRight = 1.0;
+export const ViewLogicalLeft = -1.0;
+export const ViewLogicalRight = 1.0;
 // export const ViewLogicalBottom = -1.0;
 // export const ViewLogicalTop = 1.0;
 
-// export const ViewLogicalMaxLeft = -2.0;
-// export const ViewLogicalMaxRight = 2.0;
-// export const ViewLogicalMaxBottom = -2.0;
-// export const ViewLogicalMaxTop = 2.0;
+export const ViewLogicalMaxLeft = -2.0;
+export const ViewLogicalMaxRight = 2.0;
+export const ViewLogicalMaxBottom = -2.0;
+export const ViewLogicalMaxTop = 2.0;
 
 // 模型相对路径
-export const ResourcesPath = "../live2d/Model";
+export const ResourcesPath = "../assets";
 
-// // 模型后面的背景图像文件
-// // export let BackImageName = 'back_class_normal.png';
+// 模型后面的背景图像文件
+export let BackImageName = '/img/baoan.png';
 // export const BackImageName = '';
 
 // // 歯車
@@ -59,7 +59,7 @@ export const ModelDirSize: number = ModelDir.length;
 // export const MOCConsistencyValidationEnable = true;
 
 // 调试日志显示选项
-// export const DebugLogEnable = true;
+export const DebugLogEnable = true;
 // export const DebugTouchLogEnable = false;
 
 // 从框架输出的日志级别设置
