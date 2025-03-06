@@ -1,9 +1,9 @@
 import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
 // import { ACubismMotion } from '@framework/motion/acubismmotion';
-import { csmVector } from '@framework/type/csmvector';
+import { csmVector } from "@framework/type/csmvector";
 
 import * as LAppDefine from "./lappdefine";
-import { LAppModel } from './lappmodel';
+import { LAppModel } from "./lappmodel";
 import { LAppPal } from "./lapppal";
 import { LAppSubdelegate } from "./lappsubdelegate";
 
@@ -14,13 +14,13 @@ import { LAppSubdelegate } from "./lappsubdelegate";
 export class LAppLive2DManager {
   private _subdelegate: LAppSubdelegate;
 
-  // private _viewMatrix: CubismMatrix44; // モデル描画に用いるview行列
+  private _viewMatrix: CubismMatrix44; // 用于模型绘制的视图矩阵
   private _models: csmVector<LAppModel>; // 模型实例容器
   private _sceneIndex: number; // 场景索引值
 
   public constructor() {
     this._subdelegate = null;
-    // this._viewMatrix = new CubismMatrix44();
+    this._viewMatrix = new CubismMatrix44();
     this._models = new csmVector<LAppModel>();
     this._sceneIndex = 0;
   }
@@ -81,24 +81,23 @@ export class LAppLive2DManager {
    * 进行模型的更新处理及描绘处理
    */
   public onUpdate() {
-    // const { width, height } = this._subdelegate.getCanvas();
-    // const projection: CubismMatrix44 = new CubismMatrix44();
-    // const model: LAppModel = this._models.at(0);
-    // if (model.getModel()) {
-    //   if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
-    //     // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
-    //     model.getModelMatrix().setWidth(2.0);
-    //     projection.scale(1.0, width / height);
-    //   } else {
-    //     projection.scale(height / width, 1.0);
-    //   }
-    //   // 必要があればここで乗算
-    //   if (this._viewMatrix != null) {
-    //     projection.multiplyByMatrix(this._viewMatrix);
-    //   }
-    // }
-    // model.update();
-    // model.draw(projection); // 参照渡しなのでprojectionは変質する。
+    const { width, height } = this._subdelegate.getCanvas();
+    const projection: CubismMatrix44 = new CubismMatrix44();
+    const model: LAppModel = this._models.at(0);
+    if (model.getModel()) {
+      if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
+        // 在纵向窗口中显示横向较长的模型时，根据模型的横向尺寸计算scale
+        model.getModelMatrix().setWidth(2.0);
+        projection.scale(1.0, width / height);
+      } else {
+        projection.scale(height / width, 1.0);
+      }
+      if (this._viewMatrix != null) {
+        projection.multiplyByMatrix(this._viewMatrix);
+      }
+    }
+    model.update();
+    model.draw(projection); // 因为是“引用传递”，所以 projection 会被改变
   }
 
   /**
@@ -126,7 +125,8 @@ export class LAppLive2DManager {
     // 确定model3.json的路径。
     // 使目录名与model3.json的名称一致。
     const model: string = LAppDefine.ModelDir[index];
-    const modelPath: string = LAppDefine.ResourcesPath + model + "/";
+    const modelPath: string =
+      LAppDefine.ResourcesPath + "/model/" + model + "/";
     let modelJsonName: string = LAppDefine.ModelDir[index];
     modelJsonName += ".model3.json";
 
@@ -137,11 +137,11 @@ export class LAppLive2DManager {
     this._models.pushBack(instance);
   }
 
-  // public setViewMatrix(m: CubismMatrix44) {
-  //   for (let i = 0; i < 16; i++) {
-  //     this._viewMatrix.getArray()[i] = m.getArray()[i];
-  //   }
-  // }
+  public setViewMatrix(m: CubismMatrix44) {
+    for (let i = 0; i < 16; i++) {
+      this._viewMatrix.getArray()[i] = m.getArray()[i];
+    }
+  }
 
   // /**
   //  * モデルの追加

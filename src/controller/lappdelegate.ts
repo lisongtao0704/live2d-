@@ -59,10 +59,9 @@ export class LAppDelegate {
       if (s_instance == null) {
         return;
       }
-
-      //   for (let i = 0; i < this._subdelegates.getSize(); i++) {
-      //     this._subdelegates.at(i).update();
-      //   }
+        for (let i = 0; i < this._subdelegates.getSize(); i++) {
+          this._subdelegates.at(i).update();
+        }
       requestAnimationFrame(loop);
     };
     loop();

@@ -141,6 +141,43 @@ export class LAppSubdelegate {
   }
 
   /**
+   * 循环处理
+   */
+  public update() {
+    if (this._glManager.getGl().isContextLost()) {
+      return;
+    }
+
+    // 如果画布的尺寸发生变化，则进行尺寸调整所需的处理。
+    if (this._needResize) {
+      this.onResize();
+      this._needResize = false;
+    }
+
+    const gl = this._glManager.getGl();
+
+    // 画面初始化
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    // 启用深度测试
+    gl.enable(gl.DEPTH_TEST);
+
+    // 近的物体会掩盖远处的物体
+    gl.depthFunc(gl.LEQUAL);
+
+    // 清除颜色缓冲区和深度缓冲区
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clearDepth(1.0);
+
+    // 透過設定
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    // 描画更新
+    this._view.render();
+  }
+
+  /**
    * 调整画布大小并重新初始化视图
    */
   public onResize(): void {
@@ -168,6 +205,10 @@ export class LAppSubdelegate {
 
   public getFrameBuffer(): WebGLFramebuffer {
     return this._frameBuffer;
+  }
+
+  public getLive2DManager(): LAppLive2DManager {
+    return this._live2dManager;
   }
 
   public getGlManager(): LAppGlManager {

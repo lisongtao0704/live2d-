@@ -4,8 +4,8 @@ import { CubismViewMatrix } from "@framework/math/cubismviewmatrix";
 import * as LAppDefine from "./lappdefine";
 // import { LAppDelegate } from './lappdelegate';
 // import { LAppPal } from './lapppal';
-import { LAppSprite } from './lappsprite';
-import { TextureInfo } from './lapptexturemanager';
+import { LAppSprite } from "./lappsprite";
+import { TextureInfo } from "./lapptexturemanager";
 // import { TouchManager } from './touchmanager';
 import { LAppSubdelegate } from "./lappsubdelegate";
 
@@ -108,6 +108,31 @@ export class LAppView {
     // 创建着色器
     if (this._programId == null) {
       this._programId = this._subdelegate.createShader();
+    }
+  }
+
+  /**
+   * 绘制
+   */
+  public render(): void {
+    this._subdelegate.getGlManager().getGl().useProgram(this._programId);
+
+    // 绘制背景
+    if (this._back) {
+      this._back.render(this._programId);
+    }
+
+    // if (this._gear) {
+    //   this._gear.render(this._programId);
+    // }
+
+    this._subdelegate.getGlManager().getGl().flush();
+
+    const lapplive2dmanager = this._subdelegate.getLive2DManager();
+    if (lapplive2dmanager != null) {
+      lapplive2dmanager.setViewMatrix(this._viewMatrix);
+
+      lapplive2dmanager.onUpdate();
     }
   }
 }

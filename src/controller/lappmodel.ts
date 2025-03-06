@@ -8,18 +8,18 @@ import { CubismEyeBlink } from "@framework/effect/cubismeyeblink";
 import { ICubismModelSetting } from "@framework/icubismmodelsetting";
 import { CubismIdHandle } from "@framework/id/cubismid";
 import { CubismFramework } from "@framework/live2dcubismframework";
-// import { CubismMatrix44 } from '@framework/math/cubismmatrix44';
+import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
 import { CubismUserModel } from "@framework/model/cubismusermodel";
 import {
   ACubismMotion,
   BeganMotionCallback,
   FinishedMotionCallback,
 } from "@framework/motion/acubismmotion";
-import { CubismMotion } from '@framework/motion/cubismmotion';
-// import {
-//   CubismMotionQueueEntryHandle,
-//   InvalidMotionQueueEntryHandleValue
-// } from '@framework/motion/cubismmotionqueuemanager';
+import { CubismMotion } from "@framework/motion/cubismmotion";
+import {
+  CubismMotionQueueEntryHandle,
+  InvalidMotionQueueEntryHandleValue,
+} from "@framework/motion/cubismmotionqueuemanager";
 import { csmMap } from "@framework/type/csmmap";
 // import { csmRect } from '@framework/type/csmrectf';
 // import { csmString } from '@framework/type/csmstring';
@@ -30,10 +30,10 @@ import {
   CubismLogInfo,
 } from "@framework/utils/cubismdebug";
 
-// import * as LAppDefine from './lappdefine';
+import * as LAppDefine from "./lappdefine";
 import { LAppPal } from "./lapppal";
-import { TextureInfo } from './lapptexturemanager';
-// import { LAppWavFileHandler } from './lappwavfilehandler';
+import { TextureInfo } from "./lapptexturemanager";
+// import { LAppWavFileHandler } from "./lappwavfilehandler";
 // import { CubismMoc } from '@framework/model/cubismmoc';
 // import { LAppDelegate } from './lappdelegate';
 import { LAppSubdelegate } from "./lappsubdelegate";
@@ -61,7 +61,7 @@ enum LoadStep {
   // CompleteSetupModel,
   LoadTexture,
   WaitLoadTexture,
-  CompleteSetup
+  CompleteSetup,
 }
 
 /**
@@ -73,7 +73,7 @@ export class LAppModel extends CubismUserModel {
 
   private _modelSetting: ICubismModelSetting; // 模型设置信息
   private _modelHomeDir: string; // 模型设置所在的目录
-  // private _userTimeSeconds: number; // デルタ時間の積算値[秒]
+  private _userTimeSeconds: number; // 增量时间累计值[秒]
 
   private _eyeBlinkIds: csmVector<CubismIdHandle>; // 模型设置的瞬时功能参数ID
   private _lipSyncIds: csmVector<CubismIdHandle>; // 模型设置的唇同步功能参数标识
@@ -87,8 +87,8 @@ export class LAppModel extends CubismUserModel {
   private _idParamAngleX: CubismIdHandle; // 参数ID: ParamAngleX
   private _idParamAngleY: CubismIdHandle; // 参数ID: ParamAngleY
   private _idParamAngleZ: CubismIdHandle; // 参数ID: ParamAngleZ
-  // private _idParamEyeBallX: CubismIdHandle; // 参数ID: ParamEyeBallX
-  // private _idParamEyeBallY: CubismIdHandle; // 参数ID: ParamEyeBAllY
+  private _idParamEyeBallX: CubismIdHandle; // 参数ID: ParamEyeBallX
+  private _idParamEyeBallY: CubismIdHandle; // 参数ID: ParamEyeBAllY
   private _idParamBodyAngleX: CubismIdHandle; // 参数ID: ParamBodyAngleX
 
   private _state: LoadStep; // 用于当前状态管理
@@ -96,7 +96,7 @@ export class LAppModel extends CubismUserModel {
   private _textureCount: number; // 纹理计数
   private _motionCount: number; // 运动数据计数
   private _allMotionCount: number; // 运动总数
-  // private  _wavFileHandler: LAppWavFileHandler; //wavファイルハンドラ
+  // private _wavFileHandler: LAppWavFileHandler; // wav文件处理程序
   // private _consistency: boolean; // MOC3一貫性チェック管理用
 
   public constructor() {
@@ -104,10 +104,10 @@ export class LAppModel extends CubismUserModel {
 
     this._modelSetting = null;
     this._modelHomeDir = null;
-    // this._userTimeSeconds = 0.0;
+    this._userTimeSeconds = 0.0;
 
     this._eyeBlinkIds = new csmVector<CubismIdHandle>();
-    // this._lipSyncIds = new csmVector<CubismIdHandle>();
+    this._lipSyncIds = new csmVector<CubismIdHandle>();
 
     this._motions = new csmMap<string, ACubismMotion>();
     this._expressions = new csmMap<string, ACubismMotion>();
@@ -124,12 +124,12 @@ export class LAppModel extends CubismUserModel {
     this._idParamAngleZ = CubismFramework.getIdManager().getId(
       CubismDefaultParameterId.ParamAngleZ
     );
-    // this._idParamEyeBallX = CubismFramework.getIdManager().getId(
-    //   CubismDefaultParameterId.ParamEyeBallX
-    // );
-    // this._idParamEyeBallY = CubismFramework.getIdManager().getId(
-    //   CubismDefaultParameterId.ParamEyeBallY
-    // );
+    this._idParamEyeBallX = CubismFramework.getIdManager().getId(
+      CubismDefaultParameterId.ParamEyeBallX
+    );
+    this._idParamEyeBallY = CubismFramework.getIdManager().getId(
+      CubismDefaultParameterId.ParamEyeBallY
+    );
     this._idParamBodyAngleX = CubismFramework.getIdManager().getId(
       CubismDefaultParameterId.ParamBodyAngleX
     );
@@ -147,7 +147,7 @@ export class LAppModel extends CubismUserModel {
     // this._consistency = false;
   }
 
-  public setSubdelegate(subdelegate: LAppSubdelegate): void {
+  public setSubdelegate(subdelegate: LAppSubdelegate) {
     this._subdelegate = subdelegate;
   }
 
@@ -157,7 +157,7 @@ export class LAppModel extends CubismUserModel {
    *
    * @param setting ICubismModelSetting实例
    */
-  private setupModel(setting: ICubismModelSetting): void {
+  private setupModel(setting: ICubismModelSetting) {
     this._updating = true;
     this._initialized = false;
 
@@ -361,7 +361,7 @@ export class LAppModel extends CubismUserModel {
     };
 
     // UserData 用户数据
-    const loadUserData = (): void => {
+    const loadUserData = () => {
       if (this._modelSetting.getUserDataFile() != "") {
         const userDataFile = this._modelSetting.getUserDataFile();
 
@@ -395,7 +395,7 @@ export class LAppModel extends CubismUserModel {
     };
 
     // EyeBlinkIds 眨眼
-    const setupEyeBlinkIds = (): void => {
+    const setupEyeBlinkIds = () => {
       const eyeBlinkIdCount: number =
         this._modelSetting.getEyeBlinkParameterCount();
 
@@ -412,7 +412,7 @@ export class LAppModel extends CubismUserModel {
     };
 
     // LipSyncIds 唇部
-    const setupLipSyncIds = (): void => {
+    const setupLipSyncIds = () => {
       const lipSyncIdCount = this._modelSetting.getLipSyncParameterCount();
 
       for (let i = 0; i < lipSyncIdCount; ++i) {
@@ -425,7 +425,7 @@ export class LAppModel extends CubismUserModel {
     };
 
     // Layout
-    const setupLayout = (): void => {
+    const setupLayout = () => {
       const layout: csmMap<string, number> = new csmMap<string, number>();
 
       if (this._modelSetting == null || this._modelMatrix == null) {
@@ -442,7 +442,7 @@ export class LAppModel extends CubismUserModel {
     };
 
     // Motion 运动
-    const loadCubismMotion = (): void => {
+    const loadCubismMotion = () => {
       this._state = LoadStep.WaitLoadMotion;
       this._model.saveParameters();
       this._allMotionCount = 0;
@@ -480,9 +480,257 @@ export class LAppModel extends CubismUserModel {
   }
 
   /**
+   *开始播放由参数指定的运动
+   * @param group运动组名称
+   * @paramno组中的编号
+   * @param priority优先级
+   * @param onFinishedMotionHandler运动播放结束时调用的回调函数
+   * @return 返回已启动运动的标识号。在isFinished（）的参数中使用，isFinished（）判断单独的运动是否结束。无法启动时[-1]
+   */
+  public startMotion(
+    group: string,
+    no: number,
+    priority: number,
+    onFinishedMotionHandler?: FinishedMotionCallback,
+    onBeganMotionHandler?: BeganMotionCallback
+  ): CubismMotionQueueEntryHandle {
+    if (priority == LAppDefine.PriorityForce) {
+      this._motionManager.setReservePriority(priority);
+    } else if (!this._motionManager.reserveMotion(priority)) {
+      if (this._debugMode) {
+        LAppPal.printMessage("[APP]can't start motion.");
+      }
+      return InvalidMotionQueueEntryHandleValue;
+    }
+
+    const motionFileName = this._modelSetting.getMotionFileName(group, no);
+
+    // ex: idle_0
+    const name = `${group}_${no}`;
+    console.log("name:", name);
+    let motion: CubismMotion = this._motions.getValue(name) as CubismMotion;
+    let autoDelete = false;
+    if (motion == null) {
+      fetch(`${this._modelHomeDir}${motionFileName}`)
+        .then((response) => {
+          if (response.ok) {
+            return response.arrayBuffer();
+          } else if (response.status >= 400) {
+            CubismLogError(
+              `Failed to load file ${this._modelHomeDir}${motionFileName}`
+            );
+            return new ArrayBuffer(0);
+          }
+        })
+        .then((arrayBuffer) => {
+          motion = this.loadMotion(
+            arrayBuffer,
+            arrayBuffer.byteLength,
+            null,
+            onFinishedMotionHandler,
+            onBeganMotionHandler,
+            this._modelSetting,
+            group,
+            no
+          );
+
+          if (motion == null) {
+            return;
+          }
+
+          motion.setEffectIds(this._eyeBlinkIds, this._lipSyncIds);
+          autoDelete = true; // 退出时从内存中删除
+        });
+    } else {
+      motion.setBeganMotionHandler(onBeganMotionHandler);
+      motion.setFinishedMotionHandler(onFinishedMotionHandler);
+    }
+
+    //voice
+    const voice = this._modelSetting.getMotionSoundFileName(group, no);
+    if (voice.localeCompare("") != 0) {
+      let path = voice;
+      path = this._modelHomeDir + path;
+      console.log("path", path);
+      const audio = new Audio(path);
+      audio.play();
+      // this._wavFileHandler.start(path);
+    }
+
+    if (this._debugMode) {
+      LAppPal.printMessage(`[APP]start motion: [${group}_${no}`);
+    }
+
+    // motion.setBeganMotionHandler(() => {
+    //   console.log("Motion 开始播放");
+    // });
+
+    return this._motionManager.startMotionPriority(
+      motion,
+      autoDelete,
+      priority
+    );
+  }
+
+  /**
+   *开始播放随机选择的运动。
+   * @param group 运动组名称
+   * @param priority 优先级
+   * @param onFinishedMotionHandler 运动播放结束时调用的回调函数
+   * @return 返回已启动运动的标识号。在isFinished（）的参数中使用，isFinished（）判断单独的运动是否结束。无法启动时[-1]
+   */
+  public startRandomMotion(
+    group: string,
+    priority: number,
+    onFinishedMotionHandler?: FinishedMotionCallback,
+    onBeganMotionHandler?: BeganMotionCallback
+  ): CubismMotionQueueEntryHandle {
+    if (this._modelSetting.getMotionCount(group) == 0) {
+      return InvalidMotionQueueEntryHandleValue;
+    }
+
+    const no: number = Math.floor(
+      Math.random() * this._modelSetting.getMotionCount(group)
+    );
+
+    return this.startMotion(
+      group,
+      no,
+      priority,
+      onFinishedMotionHandler,
+      onBeganMotionHandler
+    );
+  }
+
+   /**
+   * 绘制模型的过程。传递要绘制模型的空间的视图投影矩阵
+   */
+   public doDraw() {
+    if (this._model == null) return;
+
+    // 传递画布大小
+    const canvas = this._subdelegate.getCanvas();
+    const viewport: number[] = [0, 0, canvas.width, canvas.height];
+
+    this.getRenderer().setRenderState(
+      this._subdelegate.getFrameBuffer(),
+      viewport
+    );
+    this.getRenderer().drawModel();
+  }
+
+  /**
+   * 绘制模型的过程。传递要绘制模型的空间的视图投影矩阵
+   */
+  public draw(matrix: CubismMatrix44) {
+    if (this._model == null) {
+      return;
+    }
+
+    // 各读取结束后
+    if (this._state == LoadStep.CompleteSetup) {
+      matrix.multiplyByMatrix(this._modelMatrix);
+
+      this.getRenderer().setMvpMatrix(matrix);
+
+      this.doDraw();
+    }
+  }
+
+  public update() {
+    if (this._state != LoadStep.CompleteSetup) return;
+    const deltaTimeSeconds: number = LAppPal.getDeltaTime();
+    this._userTimeSeconds += deltaTimeSeconds;
+
+    this._dragManager.update(deltaTimeSeconds);
+    this._dragX = this._dragManager.getX();
+    this._dragY = this._dragManager.getY();
+
+    // 是否通过运动进行参数更新
+    let motionUpdated = false;
+
+    //--------------------------------------------------------------------------
+    this._model.loadParameters(); // 加载上次保存的状态
+    if (this._motionManager.isFinished()) {
+      // 没有动作再生时，从待机动作中随机再生
+      this.startRandomMotion(
+        LAppDefine.MotionGroupIdle,
+        LAppDefine.PriorityIdle
+      );
+    } else {
+      motionUpdated = this._motionManager.updateMotion(
+        this._model,
+        deltaTimeSeconds
+      ); // 更新运动
+    }
+    this._model.saveParameters(); // 保存状态
+    //--------------------------------------------------------------------------
+
+    // 眨眼
+    if (!motionUpdated) {
+      if (this._eyeBlink != null) {
+        // 没有主运动更新时
+        this._eyeBlink.updateParameters(this._model, deltaTimeSeconds); // 眨巴眼睛
+      }
+    }
+
+    if (this._expressionManager != null) {
+      this._expressionManager.updateMotion(this._model, deltaTimeSeconds); // 通过表情更新参数（相对变化）
+    }
+
+    // 拖动引起的变化
+    // 通过拖动调整脸部朝向
+    this._model.addParameterValueById(this._idParamAngleX, this._dragX * 30); // -30から30の値を加える
+    this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
+    this._model.addParameterValueById(
+      this._idParamAngleZ,
+      this._dragX * this._dragY * -30
+    );
+
+    // 通过拖动调整身体方向
+    this._model.addParameterValueById(
+      this._idParamBodyAngleX,
+      this._dragX * 10
+    ); // 加-10到10的值
+
+    // 通过拖动调整眼睛方向
+    this._model.addParameterValueById(this._idParamEyeBallX, this._dragX); // 加-1到1的值
+    this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
+
+    // 呼吸
+    if (this._breath != null) {
+      this._breath.updateParameters(this._model, deltaTimeSeconds);
+    }
+
+    // 物理演算
+    if (this._physics != null) {
+      this._physics.evaluate(this._model, deltaTimeSeconds);
+    }
+
+    // 设置唇同步
+    if (this._lipsync) {
+      let value = 0.0; // 当实时进行唇部同步时，从系统获取音量，并在0到1的范围内输入值。
+
+      // this._wavFileHandler.update(deltaTimeSeconds);
+      // value = this._wavFileHandler.getRms();
+
+      for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
+        this._model.addParameterValueById(this._lipSyncIds.at(i), value, 0.8);
+      }
+    }
+
+    // 姿势设置
+    if (this._pose != null) {
+      this._pose.updateParameters(this._model, deltaTimeSeconds);
+    }
+
+    this._model.update();
+  }
+
+  /**
    * 将纹理加载到纹理单元
    */
-  private setupTextures(): void {
+  private setupTextures() {
     // 为了提高iPhone的阿尔法质量，Typescript采用了premultipliedAlpha
     const usePremultiply = true;
 
@@ -507,7 +755,7 @@ export class LAppModel extends CubismUserModel {
         texturePath = this._modelHomeDir + texturePath;
 
         // 加载完成时调用的回调函数
-        const onLoad = (textureInfo: TextureInfo): void => {
+        const onLoad = (textureInfo: TextureInfo) => {
           this.getRenderer().bindTexture(modelTextureNumber, textureInfo.id);
           this._textureCount++;
 
@@ -533,7 +781,7 @@ export class LAppModel extends CubismUserModel {
    *
    *@param group运动数据组名称
    */
-  public preLoadMotionGroup(group: string): void {
+  public preLoadMotionGroup(group: string) {
     for (let i = 0; i < this._modelSetting.getMotionCount(group); i++) {
       const motionFileName = this._modelSetting.getMotionFileName(group, i);
 
@@ -606,8 +854,10 @@ export class LAppModel extends CubismUserModel {
    * @param dir
    * @param fileName
    */
-  public loadAssets(dir: string, fileName: string): void {
+  public loadAssets(dir: string, fileName: string) {
     this._modelHomeDir = dir;
+    // console.log(88, this._modelHomeDir, )
+    // new URL(`${this._modelHomeDir}${fileName}`, import.meta.url).href
     fetch(`${this._modelHomeDir}${fileName}`)
       .then((response) => response.arrayBuffer())
       .then((arrayBuffer) => {

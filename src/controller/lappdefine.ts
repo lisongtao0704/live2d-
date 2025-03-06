@@ -22,7 +22,7 @@ export const ViewLogicalMaxBottom = -2.0;
 export const ViewLogicalMaxTop = 2.0;
 
 // 模型相对路径
-export const ResourcesPath = "../assets";
+export const ResourcesPath = "/src/assets";
 
 // 模型后面的背景图像文件
 export let BackImageName = '/img/baoan.png';
@@ -41,19 +41,19 @@ export const ModelDir: string[] = ["Mao", "haru", "kei_vowels_pro"];
 
 export const ModelDirSize: number = ModelDir.length;
 
-// 外部定義ファイル（json）と合わせる
-// export const MotionGroupIdle = 'Idle'; // アイドリング
+// 与外部定义文件（json）匹配
+export const MotionGroupIdle = 'Idle'; // 待机状态
 // export const MotionGroupTapBody = 'TapBody'; // 点击身体时
 
-// // 外部定義ファイル（json）と合わせる
+// 与外部定义文件（json）匹配
 // export const HitAreaNameHead = 'Head';
 // export const HitAreaNameBody = 'Body';
 
 // 运动优先级常数
 // export const PriorityNone = 0;
-// export const PriorityIdle = 1;
+export const PriorityIdle = 1;
 // export const PriorityNormal = 2;
-// export const PriorityForce = 3;
+export const PriorityForce = 3;
 
 // MOC3一致性验证选项
 // export const MOCConsistencyValidationEnable = true;
