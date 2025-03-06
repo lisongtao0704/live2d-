@@ -3,7 +3,7 @@
 import { Live2DCubismFramework as live2dcubismframework } from '@framework/live2dcubismframework.ts';
 import CubismFramework = live2dcubismframework.CubismFramework;
 console.log(888,CubismFramework )
-// CubismFramework.startup();
+CubismFramework.startup();
 </script>
 
 <template>

@@ -176,16 +176,16 @@ export class CubismExpressionMotionManager extends CubismMotionQueueManager {
     return this.startMotion(motion, autoDelete);
   }
 
-/**
-*@brief更新运动
-*
-*更新运动以在模型中反映参数值。
-*
-*@param[in]model对象的模型
-*@param[in]deltaTimeSeconds增量时间[秒]
-*@retval true已更新
-*@retval false未更新
-*/
+  /**
+   * @brief モーションの更新
+   *
+   * モーションを更新して、モデルにパラメータ値を反映する。
+   *
+   * @param[in]   model   対象のモデル
+   * @param[in]   deltaTimeSeconds    デルタ時間[秒]
+   * @retval  true    更新されている
+   * @retval  false   更新されていない
+   */
   public updateMotion(model: CubismModel, deltaTimeSeconds: number): boolean {
     this._userTimeSeconds += deltaTimeSeconds;
     let updated = false;

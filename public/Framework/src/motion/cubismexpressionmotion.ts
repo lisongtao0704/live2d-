@@ -102,7 +102,7 @@ export class CubismExpressionMotion extends ACubismMotion {
    *
    * モデルの表情に関するパラメータを計算する。
    *
-   * @param[in]   model                        目标模型
+   * @param[in]   model                        対象のモデル
    * @param[in]   userTimeSeconds              デルタ時間の積算値[秒]
    * @param[in]   motionQueueEntry             CubismMotionQueueManagerで管理されているモーション
    * @param[in]   expressionParameterValues    モデルに適用する各パラメータの値
