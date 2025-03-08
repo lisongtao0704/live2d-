@@ -39,9 +39,9 @@ export const ModelDir: string[] = [
   "Mark",
   "Rice",
   "miara_pro_t03",
-];
-// "izumi_illust",
+//   "izumi_illust",
 //   "fense",
+];
 
 export const ModelDirSize: number = ModelDir.length;
 

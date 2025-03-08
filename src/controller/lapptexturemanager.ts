@@ -120,4 +120,64 @@ export class LAppTextureManager {
     );
     img.src = fileName;
   }
+
+  public release() {
+    for (
+      let ite: iterator<TextureInfo> = this._textures.begin();
+      ite.notEqual(this._textures.end());
+      ite.preIncrement()
+    ) {
+      this._glManager.getGl().deleteTexture(ite.ptr().id);
+    }
+    this._textures = null;
+  }
+
+  /**
+   *释放图像
+   *
+   *释放阵列中存在的所有图像。
+   */
+  public releaseTextures() {
+    for (let i = 0; i < this._textures.getSize(); i++) {
+      this._glManager.getGl().deleteTexture(this._textures.at(i).id);
+      this._textures.set(i, null);
+    }
+
+    this._textures.clear();
+  }
+
+  /**
+   *释放图像
+   *
+   *释放指定纹理的图像。
+   *@param texture  要释放的纹理
+   */
+  public releaseTextureByTexture(texture: WebGLTexture): void {
+    for (let i = 0; i < this._textures.getSize(); i++) {
+      if (this._textures.at(i).id != texture) {
+        continue;
+      }
+      this._glManager.getGl().deleteTexture(this._textures.at(i).id);
+      this._textures.set(i, null);
+      this._textures.remove(i);
+      break;
+    }
+  }
+
+  /**
+   *释放图像
+   *
+   *释放指定名称的图像。
+   *@param fileName 要释放的图像文件路径名
+   */
+  public releaseTextureByFilePath(fileName: string): void {
+    for (let i = 0; i < this._textures.getSize(); i++) {
+      if (this._textures.at(i).fileName == fileName) {
+        this._glManager.getGl().deleteTexture(this._textures.at(i).id);
+        this._textures.set(i, null);
+        this._textures.remove(i);
+        break;
+      }
+    }
+  }
 }

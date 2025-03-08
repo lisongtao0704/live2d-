@@ -34,7 +34,6 @@ function changeExpression(event) {
 
 function changeMotion(event) {
   const motion = toRaw(states.motionList.getValue(event.target.value));
-  console.log(999, model._motionManager.startMotionPriority, motion, false, 2);
   model._motionManager.startMotionPriority(motion, false, 2);
 }
 
@@ -48,6 +47,48 @@ window.addEventListener("modelSwitched", (event: any) => {
 
 function handleChange(value: string) {
   subdelegate._live2dManager.nextScene(value);
+}
+
+function throttleClick(fn, delay) {
+  let lastTime = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - lastTime >= delay) {
+      lastTime = now;
+      fn.apply(this, args);
+    }
+  };
+}
+
+const throttledClick = throttleClick(texture, 300);
+
+let tag = true;
+
+function texture() {
+  if (tag) {
+    subdelegate._textureManager.releaseTextureByFilePath(
+      "/src/assets/model/haru/haru.1024/texture_02.png"
+    );
+    subdelegate._textureManager.createTextureFromPngFile(
+      "/src/assets/model/haru/haru.1024/texture_03.png",
+      true,
+      (newTextureInfo) => {
+        model.getRenderer().bindTexture(2, newTextureInfo.id);
+      }
+    );
+  } else {
+    subdelegate._textureManager.releaseTextureByFilePath(
+      "/src/assets/model/haru/haru.1024/texture_03.png"
+    );
+    subdelegate._textureManager.createTextureFromPngFile(
+      "/src/assets/model/haru/haru.1024/texture_02.png",
+      true,
+      (newTextureInfo) => {
+        model.getRenderer().bindTexture(2, newTextureInfo.id);
+      }
+    );
+  }
+  tag = !tag;
 }
 </script>
 
@@ -65,6 +106,13 @@ function handleChange(value: string) {
           }}</a-select-option>
         </a-select>
       </a-form-item>
+      <a-button
+        type="primary"
+        class="btn"
+        v-if="modeName === 'haru'"
+        @click="throttledClick"
+        >更换纹理</a-button
+      >
       <a-form-item label="表情控制" v-if="states.expressionsList?._size !== 0">
         <template
           v-for="item in states.expressionsList?._keyValues"
@@ -115,5 +163,10 @@ function handleChange(value: string) {
     width: 100%;
     height: 100%;
   }
+}
+
+.btn {
+  margin-bottom: 24px;
+  width: 100%;
 }
 </style>
