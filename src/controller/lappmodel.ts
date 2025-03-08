@@ -760,6 +760,12 @@ export class LAppModel extends CubismUserModel {
           if (this._textureCount >= textureCount) {
             // 加载完成
             this._state = LoadStep.CompleteSetup;
+
+            window.dispatchEvent(
+              new CustomEvent("modelSwitched", {
+                detail: this,
+              })
+            );
           }
         };
 
@@ -848,14 +854,38 @@ export class LAppModel extends CubismUserModel {
   }
 
   /**
+   * 命中判定测试
+   * 根据指定ID的顶点列表计算矩形，判定坐标是否在矩形范围内。
+   *
+   * @param hitArenaName测试每个判定的对象ID
+   * @param x判定X坐标
+   * @param y判定的Y坐标
+   */
+  public hitTest(hitArenaName: string, x: number, y: number): boolean {
+    // 透明时无命中判定。
+    if (this._opacity < 1) {
+      return false;
+    }
+
+    const count: number = this._modelSetting.getHitAreasCount();
+
+    for (let i = 0; i < count; i++) {
+      if (this._modelSetting.getHitAreaName(i) == hitArenaName) {
+        const drawId: CubismIdHandle = this._modelSetting.getHitAreaId(i);
+        return this.isHit(drawId, x, y);
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * 从放置的目录和文件路径生成模型
    * @param dir
    * @param fileName
    */
   public loadAssets(dir: string, fileName: string) {
     this._modelHomeDir = dir;
-    // console.log(88, this._modelHomeDir, )
-    // new URL(`${this._modelHomeDir}${fileName}`, import.meta.url).href
     fetch(`${this._modelHomeDir}${fileName}`)
       .then((response) => response.arrayBuffer())
       .then((arrayBuffer) => {

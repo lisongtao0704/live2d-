@@ -52,28 +52,28 @@ export class LAppLive2DManager {
    * @param y 画面的Y坐标
    */
   public onTap(x: number, y: number) {
-    // if (LAppDefine.DebugLogEnable) {
-    //   LAppPal.printMessage(
-    //     `[APP]tap point: {x: ${x.toFixed(2)} y: ${y.toFixed(2)}}`
-    //   );
-    // }
-    // const model: LAppModel = this._models.at(0);
-    // if (model.hitTest(LAppDefine.HitAreaNameHead, x, y)) {
-    //   if (LAppDefine.DebugLogEnable) {
-    //     LAppPal.printMessage(`[APP]hit area: [${LAppDefine.HitAreaNameHead}]`);
-    //   }
-    //   model.setRandomExpression();
-    // } else if (model.hitTest(LAppDefine.HitAreaNameBody, x, y)) {
-    //   if (LAppDefine.DebugLogEnable) {
-    //     LAppPal.printMessage(`[APP]hit area: [${LAppDefine.HitAreaNameBody}]`);
-    //   }
-    //   model.startRandomMotion(
-    //     LAppDefine.MotionGroupTapBody,
-    //     LAppDefine.PriorityNormal,
-    //     this.finishedMotion,
-    //     this.beganMotion
-    //   );
-    // }
+    if (LAppDefine.DebugLogEnable) {
+      LAppPal.printMessage(
+        `[APP]tap point: {x: ${x.toFixed(2)} y: ${y.toFixed(2)}}`
+      );
+    }
+    const model: LAppModel = this._models.at(0);
+    if (model.hitTest(LAppDefine.HitAreaNameHead, x, y)) {
+      if (LAppDefine.DebugLogEnable) {
+        LAppPal.printMessage(`[APP]hit area: [${LAppDefine.HitAreaNameHead}]`);
+      }
+      model.setRandomExpression();
+    } else if (model.hitTest(LAppDefine.HitAreaNameBody, x, y)) {
+      if (LAppDefine.DebugLogEnable) {
+        LAppPal.printMessage(`[APP]hit area: [${LAppDefine.HitAreaNameBody}]`);
+      }
+      model.startRandomMotion(
+        LAppDefine.MotionGroupTapBody,
+        LAppDefine.PriorityNormal,
+        this.finishedMotion,
+        this.beganMotion
+      );
+    }
   }
 
   /**

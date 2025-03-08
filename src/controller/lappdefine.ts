@@ -30,12 +30,6 @@ export const ResourcesPath = "/src/assets";
 // export const BackImageName = '/img/baoan.png';
 export const BackImageName = "";
 
-// // 歯車
-// export const GearImageName = 'icon_gear.png';
-
-// // 終了ボタン
-// export const PowerImageName = 'CloseNormal.png';
-
 // 模型定义----------------------------------
 // 放置模型的目录名数组
 // 使目录名与model3.json的名称一致
@@ -44,27 +38,27 @@ export const ModelDir: string[] = [
   "Mao",
   "kei_vowels_pro",
   "tororo",
-  "izumi_illust",
-  //   "fense",
   "Mark",
   "Rice",
   "miara_pro_t03",
 ];
+// "izumi_illust",
+//   "fense",
 
 export const ModelDirSize: number = ModelDir.length;
 
 // 与外部定义文件（json）匹配
 export const MotionGroupIdle = "Idle"; // 待机状态
-// export const MotionGroupTapBody = 'TapBody'; // 点击身体时
+export const MotionGroupTapBody = 'TapBody'; // 点击身体时
 
 // 与外部定义文件（json）匹配
-// export const HitAreaNameHead = 'Head';
-// export const HitAreaNameBody = 'Body';
+export const HitAreaNameHead = 'Head';
+export const HitAreaNameBody = 'Body';
 
 // 运动优先级常数
 // export const PriorityNone = 0;
 export const PriorityIdle = 1;
-// export const PriorityNormal = 2;
+export const PriorityNormal = 2;
 export const PriorityForce = 3;
 
 // MOC3一致性验证选项
