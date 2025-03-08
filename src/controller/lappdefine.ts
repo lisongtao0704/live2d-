@@ -1,5 +1,7 @@
 import { LogLevel } from "@framework/live2dcubismframework";
 
+// 画布id
+export let CanvasId = "live2d";
 // 画布尺寸
 export const CanvasSize: { width: number; height: number } | "auto" = "auto";
 
@@ -25,8 +27,8 @@ export const ViewLogicalMaxTop = 2.0;
 export const ResourcesPath = "/src/assets";
 
 // 模型后面的背景图像文件
-export let BackImageName = '/img/baoan.png';
-// export const BackImageName = '';
+// export const BackImageName = '/img/baoan.png';
+export const BackImageName = "";
 
 // // 歯車
 // export const GearImageName = 'icon_gear.png';
@@ -37,12 +39,22 @@ export let BackImageName = '/img/baoan.png';
 // 模型定义----------------------------------
 // 放置模型的目录名数组
 // 使目录名与model3.json的名称一致
-export const ModelDir: string[] = ["Mao", "haru", "kei_vowels_pro"];
+export const ModelDir: string[] = [
+  "haru",
+  "Mao",
+  "kei_vowels_pro",
+  "tororo",
+  "izumi_illust",
+  //   "fense",
+  "Mark",
+  "Rice",
+  "miara_pro_t03",
+];
 
 export const ModelDirSize: number = ModelDir.length;
 
 // 与外部定义文件（json）匹配
-export const MotionGroupIdle = 'Idle'; // 待机状态
+export const MotionGroupIdle = "Idle"; // 待机状态
 // export const MotionGroupTapBody = 'TapBody'; // 点击身体时
 
 // 与外部定义文件（json）匹配
@@ -66,5 +78,13 @@ export const DebugTouchLogEnable = false; // 鼠标日志
 export const CubismLoggingLevel: LogLevel = LogLevel.LogLevel_Verbose;
 
 // 默认渲染目标大小
-export const RenderTargetWidth = 1900;
-export const RenderTargetHeight = 1000;
+// export const RenderTargetWidth = 1900;
+// export const RenderTargetHeight = 1000;
+
+export interface IOpt {
+  CanvasId: string; // 画布id
+}
+
+export function setDefineOption(opt: IOpt) {
+  CanvasId = opt.CanvasId;
+}

@@ -1,17 +1,25 @@
 import { LAppDelegate } from "./lappdelegate.ts";
+import { setDefineOption, IOpt } from "./lappdefine.ts";
+
+const initOptions: IOpt = {
+  CanvasId: "live2d",
+};
+
+setDefineOption(initOptions);
 
 window.addEventListener(
   "load",
   (): void => {
-  const instance = LAppDelegate.getInstance()
+    const instance = LAppDelegate.getInstance();
     if (!instance.initialize()) {
       return;
     }
     console.log("绘制", instance);
     instance.run();
-    // window.LAppDelegate = LAppDelegate.getInstance();
-    // window.LAppDelegate.run();
-    // window.dispatchEvent(myEvent);
+    const myEvent = new CustomEvent("ok", {
+      detail: instance,
+    });
+    window.dispatchEvent(myEvent);
   },
   { passive: true }
 );

@@ -162,11 +162,9 @@ export class LAppModel extends CubismUserModel {
     this._initialized = false;
 
     this._modelSetting = setting;
-
     // CubismModel 模型
     if (this._modelSetting.getModelFileName() != "") {
       const modelFileName = this._modelSetting.getModelFileName();
-
       fetch(`${this._modelHomeDir}${modelFileName}`)
         .then((response) => {
           if (response.ok) {
@@ -602,10 +600,10 @@ export class LAppModel extends CubismUserModel {
     );
   }
 
-   /**
+  /**
    * 绘制模型的过程。传递要绘制模型的空间的视图投影矩阵
    */
-   public doDraw() {
+  public doDraw() {
     if (this._model == null) return;
 
     // 传递画布大小
@@ -875,5 +873,45 @@ export class LAppModel extends CubismUserModel {
         // 在model3.json读取中发生错误时不能进行描绘
         CubismLogError(`Failed to load file ${this._modelHomeDir}${fileName}`);
       });
+  }
+
+  /**
+   * 设置参数指定的表情运动
+   *
+   *@param expressionId 表情ID
+   */
+  public setExpression(expressionId: string): void {
+    const motion: ACubismMotion = this._expressions.getValue(expressionId);
+
+    if (this._debugMode) {
+      LAppPal.printMessage(`[APP]expression: [${expressionId}]`);
+    }
+
+    if (motion != null) {
+      this._expressionManager.startMotion(motion, false);
+    } else {
+      if (this._debugMode) {
+        LAppPal.printMessage(`[APP]expression[${expressionId}] is null`);
+      }
+    }
+  }
+
+  /**
+   * 随机表情
+   */
+  public setRandomExpression() {
+    if (this._expressions.getSize() == 0) {
+      return;
+    }
+
+    const no: number = Math.floor(Math.random() * this._expressions.getSize());
+    for (let i = 0; i < this._expressions.getSize(); i++) {
+      if (i == no) {
+        const name: string = this._expressions._keyValues[i].first;
+
+        this.setExpression(name);
+        return;
+      }
+    }
   }
 }

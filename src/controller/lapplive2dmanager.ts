@@ -1,5 +1,5 @@
 import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
-// import { ACubismMotion } from '@framework/motion/acubismmotion';
+import { ACubismMotion } from "@framework/motion/acubismmotion";
 import { csmVector } from "@framework/type/csmvector";
 
 import * as LAppDefine from "./lappdefine";
@@ -35,21 +35,21 @@ export class LAppLive2DManager {
   /**
    *   拖动屏幕时的操作
    *
-   *   @param x画面的X坐标
-   *   @param y画面的Y坐标
+   *   @param x 画面的X坐标
+   *   @param y 画面的Y坐标
    */
   public onDrag(x: number, y: number) {
-    // const model: LAppModel = this._models.at(0);
-    // if (model) {
-    //   model.setDragging(x, y);
-    // }
+    const model: LAppModel = this._models.at(0);
+    if (model) {
+      model.setDragging(x, y);
+    }
   }
 
   /**
    *点击画面时的处理
    *
-   * @param x画面的X坐标
-   * @param y画面的Y坐标
+   * @param x 画面的X坐标
+   * @param y 画面的Y坐标
    */
   public onTap(x: number, y: number) {
     // if (LAppDefine.DebugLogEnable) {
@@ -101,12 +101,16 @@ export class LAppLive2DManager {
   }
 
   /**
-   * 切换到下一个场景
+   * 切换到指定场景
    * 在示例应用程序中切换模型集。
    */
-  public nextScene(): void {
-    const no: number = (this._sceneIndex + 1) % LAppDefine.ModelDirSize;
-    this.changeScene(no);
+  public nextScene(name: string) {
+    const index = LAppDefine.ModelDir.indexOf(name);
+    if (index !== -1) {
+      this.changeScene(index);
+    } else {
+      console.log(`模型 "${name}" 不存在`);
+    }
   }
 
   /**
@@ -114,7 +118,7 @@ export class LAppLive2DManager {
    * 在示例应用程序中切换模型集。
    * @param index
    */
-  private changeScene(index: number): void {
+  private changeScene(index: number) {
     this._sceneIndex = index;
 
     if (LAppDefine.DebugLogEnable) {
@@ -143,14 +147,6 @@ export class LAppLive2DManager {
     }
   }
 
-  // /**
-  //  * モデルの追加
-  //  */
-  // public addModel(sceneIndex: number = 0) {
-  //   this._sceneIndex = sceneIndex;
-  //   this.changeScene(this._sceneIndex);
-  // }
-
   /**
    * 初始化
    * @param subdelegate
@@ -160,18 +156,18 @@ export class LAppLive2DManager {
     this.changeScene(this._sceneIndex);
   }
 
-  // // モーション再生開始のコールバック関数
-  // public beganMotion = (self: ACubismMotion) => {
-  //   LAppPal.printMessage("Motion Began:");
-  //   console.log(self);
-  // };
-  // // モーション再生終了のコールバック関数
-  // public finishedMotion = (self: ACubismMotion) => {
-  //   LAppPal.printMessage("Motion Finished:");
-  //   console.log(self);
-  // };
+  // 运动播放开始回调函数
+  public beganMotion = (self: ACubismMotion) => {
+    LAppPal.printMessage("Motion Began:");
+    console.log(self);
+  };
+  // 运动播放结束的回调函数
+  public finishedMotion = (self: ACubismMotion) => {
+    LAppPal.printMessage("Motion Finished:");
+    console.log(self);
+  };
 
   public getMotion() {
-    // return this._models.at(0);
+    return this._models.at(0);
   }
 }

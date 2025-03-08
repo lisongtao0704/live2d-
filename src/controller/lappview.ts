@@ -2,7 +2,6 @@ import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
 import { CubismViewMatrix } from "@framework/math/cubismviewmatrix";
 
 import * as LAppDefine from "./lappdefine";
-// import { LAppDelegate } from './lappdelegate';
 import { LAppPal } from "./lapppal";
 import { LAppSprite } from "./lappsprite";
 import { TextureInfo } from "./lapptexturemanager";
@@ -205,7 +204,7 @@ export class LAppView {
   }
 
   /**
-   *  触摸结束后被叫。
+   *  触摸结束后。
    *
    * @param pointX  屏幕X坐标
    * @param pointY  屏幕Y坐标

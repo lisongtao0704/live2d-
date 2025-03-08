@@ -83,6 +83,7 @@ export class LAppDelegate {
 
   private releaseSubdelegates() {}
 
+  // 初始化 Live2D Cubism 框架，确保 Live2D 模型能够正确加载和运行。
   private initializeCubism() {
     LAppPal.updateTime();
     this._cubismOption.logFunction = LAppPal.printMessage;
@@ -92,16 +93,17 @@ export class LAppDelegate {
   }
 
   private initializeSubdelegates() {
-    let width: number = 100;
-    let height: number = 100;
+    // let width: number = 100;
+    // let height: number = 100;
     this._canvases.prepareCapacity(LAppDefine.CanvasNum);
     this._subdelegates.prepareCapacity(LAppDefine.CanvasNum);
 
-    const canvas = document.createElement("canvas");
+    const canvas = document.getElementById(LAppDefine.CanvasId) as HTMLCanvasElement;
+    // const canvas = document.createElement("canvas");
     this._canvases.pushBack(canvas);
-    canvas.style.width = `${width}vw`;
-    canvas.style.height = `${height}vh`;
-    document.getElementById("app").appendChild(canvas);
+    // canvas.style.width = `${width}px`;
+    // canvas.style.height = `${height}px`;
+    // document.getElementById("container").appendChild(canvas);
 
     const subdelegate = new LAppSubdelegate();
     subdelegate.initialize(this._canvases.at(0));
