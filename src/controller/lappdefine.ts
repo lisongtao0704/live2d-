@@ -39,8 +39,8 @@ export const ModelDir: string[] = [
   "Mark",
   "Rice",
   "miara_pro_t03",
-//   "izumi_illust",
-//   "fense",
+  //   "izumi_illust",
+  //   "fense",
 ];
 
 export const ModelDirSize: number = ModelDir.length;
@@ -59,6 +59,10 @@ export const PriorityIdle = 1;
 export const PriorityNormal = 2;
 export const PriorityForce = 3;
 
+// 头部控制参数
+export let IsOpenDragParam = true;
+export let LR = 0; // 左右摆头比例系数
+
 // MOC3一致性验证选项
 export const MOCConsistencyValidationEnable = true;
 
@@ -70,9 +74,13 @@ export const DebugTouchLogEnable = false; // 鼠标日志
 export const CubismLoggingLevel: LogLevel = LogLevel.LogLevel_Verbose;
 
 export interface IOpt {
-  CanvasId: string; // 画布id
+  CanvasId?: string; // 画布id
+  IsOpenDragParam?: boolean; // 是否允许拖动改变参数
+  LR?: number;
 }
 
 export function setDefineOption(opt: IOpt) {
-  CanvasId = opt.CanvasId;
+  CanvasId = opt.CanvasId ?? CanvasId;
+  IsOpenDragParam = opt.IsOpenDragParam ?? IsOpenDragParam;
+  LR = opt.LR ?? LR;
 }

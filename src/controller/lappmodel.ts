@@ -707,15 +707,21 @@ export class LAppModel extends CubismUserModel {
     if (this._expressionManager != null) {
       this._expressionManager.updateMotion(this._model, deltaTimeSeconds); // 通过表情更新参数（相对变化）
     }
-
     // 拖动引起的变化
-    // 通过拖动调整脸部朝向
-    this._model.addParameterValueById(this._idParamAngleX, this._dragX * 30); // -30から30の値を加える
-    this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
-    this._model.addParameterValueById(
-      this._idParamAngleZ,
-      this._dragX * this._dragY * -30
-    );
+    if (LAppDefine.IsOpenDragParam) {
+      // 通过拖动调整脸部朝向
+      this._model.addParameterValueById(this._idParamAngleX, this._dragX * 30); // -30到30度之间
+      this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
+      this._model.addParameterValueById(
+        this._idParamAngleZ,
+        this._dragX * this._dragY * -30
+      );
+    } else {
+      this._model.addParameterValueById(
+        this._idParamAngleX,
+        LAppDefine.LR * 30
+      ); // -30到30度之间
+    }
 
     // 通过拖动调整身体方向
     this._model.addParameterValueById(

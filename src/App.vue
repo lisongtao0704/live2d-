@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { reactive, ref, toRaw } from "vue";
 import * as LAppDefine from "./controller/lappdefine";
+// import { setDefineOption, IOpt } from "./lappdefine.ts";
 
 const modeName = ref(LAppDefine.ModelDir[0]);
+const checked = ref(false);
+const lr = ref(50);
 
 let subdelegate: any = {}; // 模型控制器
 let model: any = {}; // 模型实例
@@ -90,6 +93,50 @@ function texture() {
   }
   tag = !tag;
 }
+function changeChecked(value) {
+  // LAppDefine.IsOpenDragParam = !value;
+  LAppDefine.setDefineOption({
+    IsOpenDragParam: !value,
+  });
+}
+
+function changeheadlr(value) {
+  // console.log(
+  //   999,
+  //   value,
+  //   model._idParamAngleX,
+  //   model._model.addParameterValueById
+  // );
+  model._model.addParameterValueById(model._idParamAngleX, 28); // -30到30度之间
+  //     this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
+  //     this._model.addParameterValueById(
+  //       this._idParamAngleZ,
+  //       this._dragX * this._dragY * -30
+  //     );
+  model._model.update();
+}
+
+function formatter(value: number) {
+  let deg = 0;
+  if (value === 50) {
+    LAppDefine.setDefineOption({
+      LR: 0,
+    });
+    return "正脸";
+  } else if (value < 50) {
+    deg = 30 - (value / 50) * 30;
+    LAppDefine.setDefineOption({
+      LR: -deg / 30,
+    });
+    return `左转头${Math.floor(deg)}度`;
+  } else {
+    deg = ((value - 50) / 50) * 30;
+    LAppDefine.setDefineOption({
+      LR: deg / 30,
+    });
+    return `右转头${Math.ceil(deg)}度`;
+  }
+}
 </script>
 
 <template>
@@ -134,7 +181,23 @@ function texture() {
           </a-radio-group>
         </template>
       </a-form-item>
+      <h3 class="head-frame">
+        头部控制 <a-switch v-model:checked="checked" @change="changeChecked" />
+      </h3>
+      <template v-if="checked">
+        <a-form-item label="左右">
+          <a-slider
+            v-model:value="lr"
+            :max="100"
+            :min="0"
+            style="width: 100%"
+            :tip-formatter="formatter"
+            @change="changeheadlr"
+          />
+        </a-form-item>
+      </template>
     </div>
+
     <div class="canvas-frame">
       <canvas id="live2d"></canvas>
     </div>
@@ -168,5 +231,21 @@ function texture() {
 .btn {
   margin-bottom: 24px;
   width: 100%;
+}
+:deep(.ant-form-item) {
+  .ant-slider-handle {
+    top: 4px;
+  }
+}
+.head-frame {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+</style>
+
+<style>
+.ant-tooltip-arrow-content {
+  display: none;
 }
 </style>
