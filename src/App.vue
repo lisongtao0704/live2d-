@@ -6,6 +6,7 @@ import * as LAppDefine from "./controller/lappdefine";
 const modeName = ref(LAppDefine.ModelDir[0]);
 const checked = ref(false);
 const lr = ref(50);
+const tb = ref(50);
 
 let subdelegate: any = {}; // 模型控制器
 let model: any = {}; // 模型实例
@@ -100,22 +101,6 @@ function changeChecked(value) {
   });
 }
 
-function changeheadlr(value) {
-  // console.log(
-  //   999,
-  //   value,
-  //   model._idParamAngleX,
-  //   model._model.addParameterValueById
-  // );
-  model._model.addParameterValueById(model._idParamAngleX, 28); // -30到30度之间
-  //     this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
-  //     this._model.addParameterValueById(
-  //       this._idParamAngleZ,
-  //       this._dragX * this._dragY * -30
-  //     );
-  model._model.update();
-}
-
 function formatter(value: number) {
   let deg = 0;
   if (value === 50) {
@@ -135,6 +120,28 @@ function formatter(value: number) {
       LR: deg / 30,
     });
     return `右转头${Math.ceil(deg)}度`;
+  }
+}
+
+function formattertb(value: number) {
+  let deg = 0;
+  if (value === 50) {
+    LAppDefine.setDefineOption({
+      TB: 0,
+    });
+    return "正脸";
+  } else if (value < 50) {
+    deg = 30 - (value / 50) * 30;
+    LAppDefine.setDefineOption({
+      TB: -deg / 30,
+    });
+    return `低头${Math.floor(deg)}度`;
+  } else {
+    deg = ((value - 50) / 50) * 30;
+    LAppDefine.setDefineOption({
+      TB: deg / 30,
+    });
+    return `抬头${Math.ceil(deg)}度`;
   }
 }
 </script>
@@ -192,7 +199,15 @@ function formatter(value: number) {
             :min="0"
             style="width: 100%"
             :tip-formatter="formatter"
-            @change="changeheadlr"
+          />
+        </a-form-item>
+        <a-form-item label="上下">
+          <a-slider
+            v-model:value="tb"
+            :max="100"
+            :min="0"
+            style="width: 100%"
+            :tip-formatter="formattertb"
           />
         </a-form-item>
       </template>
@@ -235,6 +250,9 @@ function formatter(value: number) {
 :deep(.ant-form-item) {
   .ant-slider-handle {
     top: 4px;
+  }
+  .ant-slider-track {
+    background-color: transparent;
   }
 }
 .head-frame {

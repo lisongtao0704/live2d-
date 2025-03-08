@@ -721,6 +721,8 @@ export class LAppModel extends CubismUserModel {
         this._idParamAngleX,
         LAppDefine.LR * 30
       ); // -30到30度之间
+
+      this._model.addParameterValueById(this._idParamAngleY, LAppDefine.TB * 30);
     }
 
     // 通过拖动调整身体方向

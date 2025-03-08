@@ -62,6 +62,7 @@ export const PriorityForce = 3;
 // 头部控制参数
 export let IsOpenDragParam = true;
 export let LR = 0; // 左右摆头比例系数
+export let TB = 0; // 上下摆头
 
 // MOC3一致性验证选项
 export const MOCConsistencyValidationEnable = true;
@@ -77,10 +78,12 @@ export interface IOpt {
   CanvasId?: string; // 画布id
   IsOpenDragParam?: boolean; // 是否允许拖动改变参数
   LR?: number;
+  TB?: number;
 }
 
 export function setDefineOption(opt: IOpt) {
   CanvasId = opt.CanvasId ?? CanvasId;
   IsOpenDragParam = opt.IsOpenDragParam ?? IsOpenDragParam;
   LR = opt.LR ?? LR;
+  TB = opt.TB ?? TB;
 }
