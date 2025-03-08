@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, toRaw } from "vue";
 import * as LAppDefine from "./controller/lappdefine";
 
 const modeName = ref(LAppDefine.ModelDir[0]);
@@ -7,7 +7,8 @@ const modeName = ref(LAppDefine.ModelDir[0]);
 let subdelegate: any = {}; // 模型控制器
 let model: any = {}; // 模型实例
 const states = reactive({
-  expressionsList: [],
+  expressionsList: [], // 表情列表
+  motionList: [], // 动作列表
   btnList: [
     {
       id: "btn1",
@@ -31,10 +32,17 @@ function changeExpression(event) {
   model.setExpression(event.target.value);
 }
 
+function changeMotion(event) {
+  const motion = toRaw(states.motionList.getValue(event.target.value));
+  console.log(999, model._motionManager.startMotionPriority, motion, false, 2);
+  model._motionManager.startMotionPriority(motion, false, 2);
+}
+
 window.addEventListener("modelSwitched", (event: any) => {
   subdelegate = event.detail._subdelegate;
   model = event.detail;
   states.expressionsList = model?._expressions;
+  states.motionList = model?._motions;
   console.log("模型ok:", event.detail); // 获取事件附带的数据
 });
 
@@ -63,6 +71,15 @@ function handleChange(value: string) {
           :key="item"
         >
           <a-radio-group size="small" @change="changeExpression">
+            <a-radio-button v-if="item?.first" :value="item.first">{{
+              item?.first
+            }}</a-radio-button>
+          </a-radio-group>
+        </template>
+      </a-form-item>
+      <a-form-item label="动作控制" v-if="states.motionList?._size !== 0">
+        <template v-for="item in states.motionList?._keyValues" :key="item">
+          <a-radio-group size="small" @change="changeMotion">
             <a-radio-button v-if="item?.first" :value="item.first">{{
               item?.first
             }}</a-radio-button>
