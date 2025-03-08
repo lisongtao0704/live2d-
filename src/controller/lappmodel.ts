@@ -708,7 +708,7 @@ export class LAppModel extends CubismUserModel {
       this._expressionManager.updateMotion(this._model, deltaTimeSeconds); // 通过表情更新参数（相对变化）
     }
     // 拖动引起的变化
-    if (LAppDefine.IsOpenDragParam) {
+    if (LAppDefine.IsOpenDragAngleParam) {
       // 通过拖动调整脸部朝向
       this._model.addParameterValueById(this._idParamAngleX, this._dragX * 30); // -30到30度之间
       this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
@@ -722,7 +722,10 @@ export class LAppModel extends CubismUserModel {
         LAppDefine.LR * 30
       ); // -30到30度之间
 
-      this._model.addParameterValueById(this._idParamAngleY, LAppDefine.TB * 30);
+      this._model.addParameterValueById(
+        this._idParamAngleY,
+        LAppDefine.TB * 30
+      );
     }
 
     // 通过拖动调整身体方向
@@ -731,9 +734,15 @@ export class LAppModel extends CubismUserModel {
       this._dragX * 10
     ); // 加-10到10的值
 
-    // 通过拖动调整眼睛方向
-    this._model.addParameterValueById(this._idParamEyeBallX, this._dragX); // 加-1到1的值
-    this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
+    // 拖动引起的变化
+    if (LAppDefine.IsOpenDragEyeBallParam) {
+      // 通过拖动调整眼睛方向
+      this._model.addParameterValueById(this._idParamEyeBallX, this._dragX); // 加-1到1的值
+      this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
+    } else {
+      this._model.addParameterValueById(this._idParamEyeBallX, LAppDefine.LR_Eye ); // 加-1到1的值
+      this._model.addParameterValueById(this._idParamEyeBallY, LAppDefine.TB_Eye );
+    }
 
     // 呼吸
     if (this._breath != null) {

@@ -7,6 +7,9 @@ const modeName = ref(LAppDefine.ModelDir[0]);
 const checked = ref(false);
 const lr = ref(50);
 const tb = ref(50);
+const checkedEye = ref(false);
+const lr_eye = ref(50);
+const tb_eye = ref(50);
 
 let subdelegate: any = {}; // 模型控制器
 let model: any = {}; // 模型实例
@@ -95,9 +98,14 @@ function texture() {
   tag = !tag;
 }
 function changeChecked(value) {
-  // LAppDefine.IsOpenDragParam = !value;
   LAppDefine.setDefineOption({
-    IsOpenDragParam: !value,
+    IsOpenDragAngleParam: !value,
+  });
+}
+
+function changeCheckedEye(value) {
+  LAppDefine.setDefineOption({
+    IsOpenDragEyeBallParam: !value,
   });
 }
 
@@ -142,6 +150,40 @@ function formattertb(value: number) {
       TB: deg / 30,
     });
     return `抬头${Math.ceil(deg)}度`;
+  }
+}
+
+function changeEyeX(value) {
+  let ratio = 0;
+  if (value === 50) {
+    ratio = 0;
+  } else if (value < 50) {
+    ratio = (30 - (value / 50) * 30) / 30;
+    LAppDefine.setDefineOption({
+      LR_Eye: -ratio,
+    });
+  } else {
+    ratio = (value - 50) / 50;
+    LAppDefine.setDefineOption({
+      LR_Eye: ratio,
+    });
+  }
+}
+
+function changeEyeY(value) {
+  let ratio = 0;
+  if (value === 50) {
+    ratio = 0;
+  } else if (value < 50) {
+    ratio = (30 - (value / 50) * 30) / 30;
+    LAppDefine.setDefineOption({
+      TB_Eye: -ratio,
+    });
+  } else {
+    ratio = (value - 50) / 50;
+    LAppDefine.setDefineOption({
+      TB_Eye: ratio,
+    });
   }
 }
 </script>
@@ -208,6 +250,30 @@ function formattertb(value: number) {
             :min="0"
             style="width: 100%"
             :tip-formatter="formattertb"
+          />
+        </a-form-item>
+      </template>
+      <h3 class="head-frame">
+        眼球控制
+        <a-switch v-model:checked="checkedEye" @change="changeCheckedEye" />
+      </h3>
+      <template v-if="checkedEye">
+        <a-form-item label="左右">
+          <a-slider
+            v-model:value="lr_eye"
+            :max="100"
+            :min="0"
+            style="width: 100%"
+            @change="changeEyeX"
+          />
+        </a-form-item>
+        <a-form-item label="上下">
+          <a-slider
+            v-model:value="tb_eye"
+            :max="100"
+            :min="0"
+            style="width: 100%"
+            @change="changeEyeY"
           />
         </a-form-item>
       </template>

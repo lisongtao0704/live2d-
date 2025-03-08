@@ -60,9 +60,13 @@ export const PriorityNormal = 2;
 export const PriorityForce = 3;
 
 // 头部控制参数
-export let IsOpenDragParam = true;
+export let IsOpenDragAngleParam = true;
 export let LR = 0; // 左右摆头比例系数
 export let TB = 0; // 上下摆头
+// 眼部控制
+export let IsOpenDragEyeBallParam = true;
+export let LR_Eye = 0;
+export let TB_Eye = 0;
 
 // MOC3一致性验证选项
 export const MOCConsistencyValidationEnable = true;
@@ -76,14 +80,20 @@ export const CubismLoggingLevel: LogLevel = LogLevel.LogLevel_Verbose;
 
 export interface IOpt {
   CanvasId?: string; // 画布id
-  IsOpenDragParam?: boolean; // 是否允许拖动改变参数
+  IsOpenDragAngleParam?: boolean; // 是否允许拖动改变参数
+  IsOpenDragEyeBallParam?: boolean; // 是否允许拖动改变参数
   LR?: number;
   TB?: number;
+  LR_Eye?: number;
+  TB_Eye?: number;
 }
 
 export function setDefineOption(opt: IOpt) {
   CanvasId = opt.CanvasId ?? CanvasId;
-  IsOpenDragParam = opt.IsOpenDragParam ?? IsOpenDragParam;
+  IsOpenDragAngleParam = opt.IsOpenDragAngleParam ?? IsOpenDragAngleParam;
   LR = opt.LR ?? LR;
   TB = opt.TB ?? TB;
+  IsOpenDragEyeBallParam = opt.IsOpenDragEyeBallParam ?? IsOpenDragEyeBallParam;
+  LR_Eye = opt.LR_Eye ?? LR_Eye;
+  TB_Eye = opt.TB_Eye ?? TB_Eye;
 }
