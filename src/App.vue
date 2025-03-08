@@ -3,11 +3,11 @@ import { reactive, ref, watch } from "vue";
 import * as LAppDefine from "./controller/lappdefine";
 
 const modeName = ref(LAppDefine.ModelDir[0]);
-const expression = ref(LAppDefine.ModelDir[0]);
 
+let subdelegate: any = {}; // 模型控制器
+let model: any = {}; // 模型实例
 const states = reactive({
-  subdelegate: {}, // 模型控制器
-  model: {}, // 模型实例
+  expressionsList: [],
   btnList: [
     {
       id: "btn1",
@@ -15,7 +15,7 @@ const states = reactive({
       name: "表情控制",
       callback: () => {
         // console.log(model.value, character.value);
-        states.model.setRandomExpression();
+        model.setRandomExpression();
         // character.value.setExpression(getRandomElement(character.value._expressions._keyValues).first)
         // getRandomElement(character.value._expressions._keyValues).first;
       },
@@ -26,31 +26,26 @@ const states = reactive({
 // function getRandomElement(arr) {
 //   return arr[Math.floor(Math.random() * arr.length)];
 // }
+
 function changeExpression(event) {
-  states.model.setExpression(event.target.value);
-  // console.log(88, states.model, states.model.setExpression, event.target.value);
+  model.setExpression(event.target.value);
 }
 
-window.addEventListener("ok", (event: any) => {
-  states.subdelegate = event.detail._subdelegates.at(0);
-  states.model = states.subdelegate._live2dManager.getMotion();
-  console.log("模型准备好:", states.model);
-});
-
 window.addEventListener("modelSwitched", (event: any) => {
-  states.subdelegate = event.detail._subdelegate;
-  states.model = event.detail;
-  console.log("切换模型:", event.detail, states.model?._expressions); // 获取事件附带的数据
+  subdelegate = event.detail._subdelegate;
+  model = event.detail;
+  states.expressionsList = model?._expressions;
+  console.log("模型ok:", event.detail); // 获取事件附带的数据
 });
 
 function handleChange(value: string) {
-  states.subdelegate._live2dManager.nextScene(value);
+  subdelegate._live2dManager.nextScene(value);
 }
 </script>
 
 <template>
   <div id="container">
-    <div class="control-panel">
+    <div class="control-panel" @click.stop>
       <a-form-item label="选择模型">
         <a-select
           placeholder="选择模型"
@@ -62,12 +57,9 @@ function handleChange(value: string) {
           }}</a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item
-        label="表情控制"
-        v-if="states.model?._expressions?._size !== 0"
-      >
+      <a-form-item label="表情控制" v-if="states.expressionsList?._size !== 0">
         <template
-          v-for="item in states.model?._expressions?._keyValues"
+          v-for="item in states.expressionsList?._keyValues"
           :key="item"
         >
           <a-radio-group size="small" @change="changeExpression">
@@ -77,12 +69,6 @@ function handleChange(value: string) {
           </a-radio-group>
         </template>
       </a-form-item>
-<!-- 
-      <template v-for="item in states.btnList" :key="item.id">
-        <a-button type="primary" @click.stop="item.callback()">{{
-          item.name
-        }}</a-button>
-      </template> -->
     </div>
     <div class="canvas-frame">
       <canvas id="live2d"></canvas>

@@ -21,8 +21,8 @@ import {
   InvalidMotionQueueEntryHandleValue,
 } from "@framework/motion/cubismmotionqueuemanager";
 import { csmMap } from "@framework/type/csmmap";
-// import { csmRect } from '@framework/type/csmrectf';
-// import { csmString } from '@framework/type/csmstring';
+import { csmRect } from "@framework/type/csmrectf";
+import { csmString } from "@framework/type/csmstring";
 import { csmVector } from "@framework/type/csmvector";
 import {
   CSM_ASSERT,
@@ -34,8 +34,7 @@ import * as LAppDefine from "./lappdefine";
 import { LAppPal } from "./lapppal";
 import { TextureInfo } from "./lapptexturemanager";
 // import { LAppWavFileHandler } from "./lappwavfilehandler";
-// import { CubismMoc } from '@framework/model/cubismmoc';
-// import { LAppDelegate } from './lappdelegate';
+import { CubismMoc } from "@framework/model/cubismmoc";
 import { LAppSubdelegate } from "./lappsubdelegate";
 
 enum LoadStep {
@@ -57,16 +56,16 @@ enum LoadStep {
   SetupLayout,
   LoadMotion,
   WaitLoadMotion,
-  // CompleteInitialize,
-  // CompleteSetupModel,
+  CompleteInitialize,
+  CompleteSetupModel,
   LoadTexture,
   WaitLoadTexture,
   CompleteSetup,
 }
 
 /**
- * ユーザーが実際に使用するモデルの実装クラス<br>
- * モデル生成、機能コンポーネント生成、更新処理とレンダリングの呼び出しを行う。
+ *用户实际使用的模型实现类<br>
+ *进行模型生成、功能组件生成、更新处理和渲染调用。
  */
 export class LAppModel extends CubismUserModel {
   private _subdelegate: LAppSubdelegate;
@@ -81,8 +80,8 @@ export class LAppModel extends CubismUserModel {
   private _motions: csmMap<string, ACubismMotion>; // 运动列表
   private _expressions: csmMap<string, ACubismMotion>; // 表情列表
 
-  // private _hitArea: csmVector<csmRect>;
-  // private _userArea: csmVector<csmRect>;
+  private _hitArea: csmVector<csmRect>;
+  private _userArea: csmVector<csmRect>;
 
   private _idParamAngleX: CubismIdHandle; // 参数ID: ParamAngleX
   private _idParamAngleY: CubismIdHandle; // 参数ID: ParamAngleY
@@ -97,7 +96,7 @@ export class LAppModel extends CubismUserModel {
   private _motionCount: number; // 运动数据计数
   private _allMotionCount: number; // 运动总数
   // private _wavFileHandler: LAppWavFileHandler; // wav文件处理程序
-  // private _consistency: boolean; // MOC3一貫性チェック管理用
+  private _consistency: boolean; // 用于MOC3一致性检查管理
 
   public constructor() {
     super();
@@ -112,8 +111,8 @@ export class LAppModel extends CubismUserModel {
     this._motions = new csmMap<string, ACubismMotion>();
     this._expressions = new csmMap<string, ACubismMotion>();
 
-    // this._hitArea = new csmVector<csmRect>();
-    // this._userArea = new csmVector<csmRect>();
+    this._hitArea = new csmVector<csmRect>();
+    this._userArea = new csmVector<csmRect>();
 
     this._idParamAngleX = CubismFramework.getIdManager().getId(
       CubismDefaultParameterId.ParamAngleX
@@ -134,9 +133,9 @@ export class LAppModel extends CubismUserModel {
       CubismDefaultParameterId.ParamBodyAngleX
     );
 
-    // if (LAppDefine.MOCConsistencyValidationEnable) {
-    //   this._mocConsistency = true;
-    // }
+    if (LAppDefine.MOCConsistencyValidationEnable) {
+      this._mocConsistency = true;
+    }
 
     this._state = LoadStep.LoadAssets;
     this._expressionCount = 0;
@@ -144,11 +143,35 @@ export class LAppModel extends CubismUserModel {
     this._motionCount = 0;
     this._allMotionCount = 0;
     // this._wavFileHandler = new LAppWavFileHandler();
-    // this._consistency = false;
+    this._consistency = false;
   }
 
   public setSubdelegate(subdelegate: LAppSubdelegate) {
     this._subdelegate = subdelegate;
+  }
+
+  public async hasMocConsistencyFromFile() {
+    CSM_ASSERT(this._modelSetting.getModelFileName().localeCompare(``));
+
+    // CubismModel
+    if (this._modelSetting.getModelFileName() != "") {
+      const modelFileName = this._modelSetting.getModelFileName();
+
+      const response = await fetch(`${this._modelHomeDir}${modelFileName}`);
+      const arrayBuffer = await response.arrayBuffer();
+
+      this._consistency = CubismMoc.hasMocConsistency(arrayBuffer);
+
+      if (!this._consistency) {
+        CubismLogInfo("Inconsistent MOC3.");
+      } else {
+        CubismLogInfo("Consistent MOC3.");
+      }
+
+      return this._consistency;
+    } else {
+      LAppPal.printMessage("Model data does not exist.");
+    }
   }
 
   /**
@@ -559,9 +582,9 @@ export class LAppModel extends CubismUserModel {
       LAppPal.printMessage(`[APP]start motion: [${group}_${no}`);
     }
 
-    // motion.setBeganMotionHandler(() => {
-    //   console.log("Motion 开始播放");
-    // });
+    motion.setBeganMotionHandler(() => {
+      console.log("Motion 开始播放");
+    });
 
     return this._motionManager.startMotionPriority(
       motion,
@@ -633,6 +656,15 @@ export class LAppModel extends CubismUserModel {
 
       this.doDraw();
     }
+  }
+
+  /**
+   * 重建渲染器
+   */
+  public reloadRenderer(): void {
+    this.deleteRenderer();
+    this.createRenderer();
+    this.setupTextures();
   }
 
   public update() {
@@ -910,7 +942,7 @@ export class LAppModel extends CubismUserModel {
    *
    *@param expressionId 表情ID
    */
-  public setExpression(expressionId: string): void {
+  public setExpression(expressionId: string) {
     const motion: ACubismMotion = this._expressions.getValue(expressionId);
 
     if (this._debugMode) {
@@ -938,10 +970,30 @@ export class LAppModel extends CubismUserModel {
     for (let i = 0; i < this._expressions.getSize(); i++) {
       if (i == no) {
         const name: string = this._expressions._keyValues[i].first;
-
         this.setExpression(name);
         return;
       }
     }
+  }
+
+  /**
+   * 释放所有运动数据
+   */
+  public releaseMotions(): void {
+    this._motions.clear();
+  }
+
+  /**
+   * 释放所有表情数据。
+   */
+  public releaseExpressions(): void {
+    this._expressions.clear();
+  }
+
+  /**
+   * 接受事件
+   */
+  public motionEventFired(eventValue: csmString): void {
+    CubismLogInfo("{0} is fired on LAppModel!!", eventValue.s);
   }
 }

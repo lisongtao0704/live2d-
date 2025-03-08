@@ -16,10 +16,6 @@ window.addEventListener(
     }
     console.log("绘制", instance);
     instance.run();
-    const myEvent = new CustomEvent("ok", {
-      detail: instance,
-    });
-    window.dispatchEvent(myEvent);
   },
   { passive: true }
 );
