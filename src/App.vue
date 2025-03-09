@@ -11,6 +11,7 @@ const lr_eye = ref(50);
 const tb_eye = ref(50);
 const checkedMouth = ref(false);
 const mouth = ref(0);
+const textValue = ref("");
 
 const isShowHead = computed(() => {
   const list = ["Mao", "kei_vowels_pro", "Rice", "miara_pro_t03"];
@@ -214,6 +215,10 @@ function changeEyeMouth(value) {
 function groupsMotios(name, index) {
   model.startMotion(name, index, 2);
 }
+
+function send() {
+  console.log("发送");
+}
 </script>
 
 <template>
@@ -242,9 +247,15 @@ function groupsMotios(name, index) {
           <a-radio-button value="0" @click="groupsMotios('FlickLeft', 1)"
             >FlickLeft1</a-radio-button
           >
-          <a-radio-button value="1" @click="groupsMotios('FlickLeft', 2)">FlickLeft2</a-radio-button>
-          <a-radio-button value="2" @click="groupsMotios('Shake', 0)">Shake0</a-radio-button>
-          <a-radio-button value="3" @click="groupsMotios('Shake', 1)">Shake1</a-radio-button>
+          <a-radio-button value="1" @click="groupsMotios('FlickLeft', 2)"
+            >FlickLeft2</a-radio-button
+          >
+          <a-radio-button value="2" @click="groupsMotios('Shake', 0)"
+            >Shake0</a-radio-button
+          >
+          <a-radio-button value="3" @click="groupsMotios('Shake', 1)"
+            >Shake1</a-radio-button
+          >
         </a-radio-group>
       </a-form-item>
       <a-form-item label="表情控制" v-if="states.expressionsList?._size !== 0">
@@ -331,6 +342,22 @@ function groupsMotios(name, index) {
           />
         </a-form-item>
       </template>
+      <div v-if="isShowMouth">
+        <div class="head-frame">语音合成</div>
+        <a-textarea
+          v-model:value="textValue"
+          :auto-size="{ minRows: 5, maxRows: 5 }"
+          showCount
+          :maxlength="100"
+        />
+        <a-button
+          style="margin-top: 10px"
+          type="primary"
+          class="btn"
+          @click="send"
+          >合成</a-button
+        >
+      </div>
     </div>
 
     <div class="canvas-frame">
