@@ -573,7 +573,7 @@ export class LAppModel extends CubismUserModel {
     if (voice.localeCompare("") != 0) {
       let path = voice;
       path = this._modelHomeDir + path;
-      // console.log("path", path);
+      console.log("path", path);
       const audio = new Audio(path);
       audio.play();
       this._wavFileHandler.start(path);
@@ -592,6 +592,86 @@ export class LAppModel extends CubismUserModel {
       autoDelete,
       priority
     );
+  }
+
+  public convertAudioBufferToWav(buffer) {
+    const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const bytesPerSample = 2; // 16-bit audio
+    const blockAlign = numChannels * bytesPerSample;
+    const bufferLength = buffer.length * numChannels * bytesPerSample;
+    const dataView = new DataView(new ArrayBuffer(44 + bufferLength));
+
+    const writeString = (view, offset, string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+
+    writeString(dataView, 0, "RIFF");
+    dataView.setUint32(4, 36 + bufferLength, true);
+    writeString(dataView, 8, "WAVE");
+    writeString(dataView, 12, "fmt ");
+    dataView.setUint32(16, 16, true);
+    dataView.setUint16(20, 1, true);
+    dataView.setUint16(22, numChannels, true);
+    dataView.setUint32(24, sampleRate, true);
+    dataView.setUint32(28, sampleRate * blockAlign, true);
+    dataView.setUint16(32, blockAlign, true);
+    dataView.setUint16(34, 16, true);
+    writeString(dataView, 36, "data");
+    dataView.setUint32(40, bufferLength, true);
+
+    let index = 44;
+    for (let channel = 0; channel < numChannels; channel++) {
+      const samples = buffer.getChannelData(channel);
+      for (let i = 0; i < buffer.length; i++) {
+        const sample = samples[i];
+        const intSample = Math.min(1, Math.max(-1, sample)) * 0x7fff;
+        dataView.setInt16(index, intSample, true);
+        index += bytesPerSample;
+      }
+    }
+
+    return dataView.buffer;
+  }
+
+  // mp3 转 mov
+  public async mp3ToMov(url) {
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioContext = new window.AudioContext();
+      const buffer = await audioContext.decodeAudioData(arrayBuffer);
+      const offlineCtx = new OfflineAudioContext(
+        buffer.numberOfChannels,
+        buffer.length,
+        buffer.sampleRate
+      );
+      // 创建音频源
+      const source = offlineCtx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(offlineCtx.destination);
+      source.start(0);
+      // 渲染音频数据
+      const renderedBuffer = await offlineCtx.startRendering();
+      // 将 AudioBuffer 转换为 WAV 格式数据
+      const wavData = this.convertAudioBufferToWav(renderedBuffer);
+      const blob = new Blob([wavData], { type: "audio/wav" });
+      const urlObject = URL.createObjectURL(blob);
+      return urlObject
+    } catch (error) {
+      console.error("转换过程中出现错误:", error);
+      alert("转换失败，请检查链接或网络");
+    }
+  }
+
+  public async playVoice(path) {
+    const url = await this.mp3ToMov(path);
+    const audio = new Audio(url);
+    audio.play();
+    // console.log(url);
+    this._wavFileHandler.start(url);
   }
 
   /**
@@ -770,7 +850,12 @@ export class LAppModel extends CubismUserModel {
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
         if (LAppDefine.IsOpenMouthParam) {
           // 通过拖动调整嘴巴开合
-          this._model.addParameterValueById(this._lipSyncIds.at(i), value, 1);
+          // console.log("唇系数:", value);
+          this._model.addParameterValueById(
+            this._lipSyncIds.at(i),
+            value * 10,
+            1
+          );
           // 0 - 1
         } else {
           this._model.addParameterValueById(

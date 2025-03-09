@@ -13,7 +13,7 @@ const checkedMouth = ref(false);
 const mouth = ref(0);
 const textValue = ref("");
 const cookieValue = ref("");
-const loading = ref(false)
+const loading = ref(false);
 
 const isShowHead = computed(() => {
   const list = ["Mao", "kei_vowels_pro", "Rice", "miara_pro_t03"];
@@ -244,7 +244,7 @@ async function send() {
     },
     body: JSON.stringify({
       type: 1,
-      text: "你好，我是由来画数字平台生成的数字人苏荷",
+      text: textValue.value,
       verboseText: textValue.value,
       speaker: "moxiaozhao_meet_24k",
       speakerId: 136,
@@ -260,8 +260,15 @@ async function send() {
       isBroadcast: 1,
     }),
   });
-  loading.value = false
-  console.log("结果", result);
+  loading.value = false;
+  const data = await result?.json();
+  if (data.code === 200) {
+    const url = `https://resources.laihua.com/${data.data.filename}`;
+    model.playVoice(url);
+  } else {
+    alert("未登录");
+  }
+  console.log("结果", data.data.filename);
 }
 
 function changeCookie() {
