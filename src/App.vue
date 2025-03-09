@@ -83,6 +83,7 @@ function throttleClick(fn, delay) {
     const now = Date.now();
     if (now - lastTime >= delay) {
       lastTime = now;
+      // @ts-ignore
       fn.apply(this, args);
     }
   };
