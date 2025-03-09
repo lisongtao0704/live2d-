@@ -502,10 +502,10 @@ export class LAppModel extends CubismUserModel {
 
   /**
    *开始播放由参数指定的运动
-   * @param group运动组名称
+   * @param group 运动组名称
    * @paramno组中的编号
-   * @param priority优先级
-   * @param onFinishedMotionHandler运动播放结束时调用的回调函数
+   * @param priority 优先级
+   * @param onFinishedMotionHandler 运动播放结束时调用的回调函数
    * @return 返回已启动运动的标识号。在isFinished（）的参数中使用，isFinished（）判断单独的运动是否结束。无法启动时[-1]
    */
   public startMotion(

@@ -210,6 +210,10 @@ function changeEyeMouth(value) {
     Mouth: ratio,
   });
 }
+
+function groupsMotios(name, index) {
+  model.startMotion(name, index, 2);
+}
 </script>
 
 <template>
@@ -233,6 +237,16 @@ function changeEyeMouth(value) {
         @click="throttledClick"
         >更换纹理</a-button
       >
+      <a-form-item label="组合控制" v-if="modeName === 'haru'">
+        <a-radio-group size="small" @change="changeExpression">
+          <a-radio-button value="0" @click="groupsMotios('FlickLeft', 1)"
+            >FlickLeft1</a-radio-button
+          >
+          <a-radio-button value="1" @click="groupsMotios('FlickLeft', 2)">FlickLeft2</a-radio-button>
+          <a-radio-button value="2" @click="groupsMotios('Shake', 0)">Shake0</a-radio-button>
+          <a-radio-button value="3" @click="groupsMotios('Shake', 1)">Shake1</a-radio-button>
+        </a-radio-group>
+      </a-form-item>
       <a-form-item label="表情控制" v-if="states.expressionsList?._size !== 0">
         <template
           v-for="item in states.expressionsList?._keyValues"
@@ -254,9 +268,9 @@ function changeEyeMouth(value) {
           </a-radio-group>
         </template>
       </a-form-item>
-      <h3 class="head-frame" v-if="isShowHead">
+      <div class="head-frame" v-if="isShowHead">
         头部控制 <a-switch v-model:checked="checked" @change="changeChecked" />
-      </h3>
+      </div>
       <template v-if="checked && isShowHead">
         <a-form-item label="左右">
           <a-slider
@@ -277,10 +291,10 @@ function changeEyeMouth(value) {
           />
         </a-form-item>
       </template>
-      <h3 class="head-frame" v-if="isShowEye">
+      <div class="head-frame" v-if="isShowEye">
         眼球控制
         <a-switch v-model:checked="checkedEye" @change="changeCheckedEye" />
-      </h3>
+      </div>
       <template v-if="checkedEye && isShowEye">
         <a-form-item label="左右">
           <a-slider
@@ -302,10 +316,10 @@ function changeEyeMouth(value) {
         </a-form-item>
       </template>
 
-      <h3 class="head-frame" v-if="isShowMouth">
+      <div class="head-frame" v-if="isShowMouth">
         嘴唇控制
         <a-switch v-model:checked="checkedMouth" @change="changeCheckedMouth" />
-      </h3>
+      </div>
       <template v-if="checkedMouth && isShowMouth">
         <a-form-item label="开合">
           <a-slider
@@ -360,11 +374,18 @@ function changeEyeMouth(value) {
   .ant-slider-track {
     background-color: transparent;
   }
+  label {
+    font-weight: 500;
+    font-size: 15px;
+  }
 }
 .head-frame {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 24px;
 }
 </style>
 
