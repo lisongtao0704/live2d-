@@ -25,7 +25,7 @@ export const ViewLogicalMaxTop = 2.0;
 export const ResourcesPath = "/live2d-/src/assets";
 
 // 模型后面的背景图像文件
-// export const BackImageName = '/img/baoan.png';
+// export const BackImageName  = '/img/baoan.png';
 export const BackImageName = "";
 
 // 模型定义----------------------------------
