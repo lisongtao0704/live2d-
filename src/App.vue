@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, toRaw, computed } from "vue";
 import * as LAppDefine from "./controller/lappdefine";
-// import { setDefineOption, IOpt } from "./lappdefine.ts";
 
 const modeName = ref(LAppDefine.ModelDir[0]);
 const checked = ref(false);
@@ -17,7 +16,7 @@ const isShowHead = computed(() => {
 });
 
 const isShowEye = computed(() => {
-  const list = ["haru", "tororo"];
+  const list = ["haru", "tororo", "izumi_illust"];
   return !list.includes(modeName.value);
 });
 

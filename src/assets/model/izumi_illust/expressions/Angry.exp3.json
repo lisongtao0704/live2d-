@@ -7,7 +7,7 @@
 			"Blend": "Add"
 		},
 		{
-			"Id": "PARAM_EYE_L_SMILE"
+			"Id": "PARAM_EYE_L_SMILE",
 			"Value": 0,
 			"Blend": "Add"
 		},

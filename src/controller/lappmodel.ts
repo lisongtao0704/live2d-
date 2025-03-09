@@ -33,7 +33,7 @@ import {
 import * as LAppDefine from "./lappdefine";
 import { LAppPal } from "./lapppal";
 import { TextureInfo } from "./lapptexturemanager";
-// import { LAppWavFileHandler } from "./lappwavfilehandler";
+import { LAppWavFileHandler } from "./lappwavfilehandler";
 import { CubismMoc } from "@framework/model/cubismmoc";
 import { LAppSubdelegate } from "./lappsubdelegate";
 
@@ -95,7 +95,7 @@ export class LAppModel extends CubismUserModel {
   private _textureCount: number; // 纹理计数
   private _motionCount: number; // 运动数据计数
   private _allMotionCount: number; // 运动总数
-  // private _wavFileHandler: LAppWavFileHandler; // wav文件处理程序
+  private _wavFileHandler: LAppWavFileHandler; // wav文件处理程序
   private _consistency: boolean; // 用于MOC3一致性检查管理
 
   public constructor() {
@@ -142,7 +142,7 @@ export class LAppModel extends CubismUserModel {
     this._textureCount = 0;
     this._motionCount = 0;
     this._allMotionCount = 0;
-    // this._wavFileHandler = new LAppWavFileHandler();
+    this._wavFileHandler = new LAppWavFileHandler();
     this._consistency = false;
   }
 
@@ -569,13 +569,14 @@ export class LAppModel extends CubismUserModel {
 
     //voice
     const voice = this._modelSetting.getMotionSoundFileName(group, no);
+    // console.log('voice', voice, group, no)
     if (voice.localeCompare("") != 0) {
       let path = voice;
       path = this._modelHomeDir + path;
-      console.log("path", path);
+      // console.log("path", path);
       const audio = new Audio(path);
       audio.play();
-      // this._wavFileHandler.start(path);
+      this._wavFileHandler.start(path);
     }
 
     if (this._debugMode) {
@@ -758,8 +759,8 @@ export class LAppModel extends CubismUserModel {
     if (this._lipsync) {
       let value = 0.0; // 当实时进行唇部同步时，从系统获取音量，并在0到1的范围内输入值。
 
-      // this._wavFileHandler.update(deltaTimeSeconds);
-      // value = this._wavFileHandler.getRms();
+      this._wavFileHandler.update(deltaTimeSeconds);
+      value = this._wavFileHandler.getRms();
 
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
         this._model.addParameterValueById(this._lipSyncIds.at(i), value, 0.8);
@@ -906,9 +907,9 @@ export class LAppModel extends CubismUserModel {
    * 命中判定测试
    * 根据指定ID的顶点列表计算矩形，判定坐标是否在矩形范围内。
    *
-   * @param hitArenaName测试每个判定的对象ID
-   * @param x判定X坐标
-   * @param y判定的Y坐标
+   * @param hitArenaName 测试每个判定的对象ID
+   * @param x 判定X坐标
+   * @param y 判定的Y坐标
    */
   public hitTest(hitArenaName: string, x: number, y: number): boolean {
     // 透明时无命中判定。

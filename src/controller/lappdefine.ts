@@ -34,12 +34,12 @@ export const BackImageName = "";
 export const ModelDir: string[] = [
   "Mao",
   "haru",
+  "izumi_illust",
   "kei_vowels_pro",
   "tororo",
   "Mark",
   "Rice",
   "miara_pro_t03",
-  //   "izumi_illust",
   //   "fense",
 ];
 
