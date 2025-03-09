@@ -29,7 +29,6 @@ export default defineConfig((env: ConfigEnv): UserConfig => {
         }
       },
     },
-    root: "./",
     base: "/live2d-/",
     publicDir: "./public",
     resolve: {
