@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, toRaw } from "vue";
+import { reactive, ref, toRaw, computed } from "vue";
 import * as LAppDefine from "./controller/lappdefine";
 // import { setDefineOption, IOpt } from "./lappdefine.ts";
 
@@ -10,6 +10,16 @@ const tb = ref(50);
 const checkedEye = ref(false);
 const lr_eye = ref(50);
 const tb_eye = ref(50);
+
+const isShowHead = computed(() => {
+  const list = ["Mao", "kei_vowels_pro", "Rice", "miara_pro_t03"];
+  return list.includes(modeName.value);
+});
+
+const isShowEye = computed(() => {
+  const list = ["haru", "tororo"];
+  return !list.includes(modeName.value);
+});
 
 let subdelegate: any = {}; // 模型控制器
 let model: any = {}; // 模型实例
@@ -53,6 +63,7 @@ window.addEventListener("modelSwitched", (event: any) => {
 });
 
 function handleChange(value: string) {
+  console.log(value);
   subdelegate._live2dManager.nextScene(value);
 }
 
@@ -230,10 +241,10 @@ function changeEyeY(value) {
           </a-radio-group>
         </template>
       </a-form-item>
-      <h3 class="head-frame">
+      <h3 class="head-frame" v-if="isShowHead">
         头部控制 <a-switch v-model:checked="checked" @change="changeChecked" />
       </h3>
-      <template v-if="checked">
+      <template v-if="checked && isShowHead">
         <a-form-item label="左右">
           <a-slider
             v-model:value="lr"
@@ -253,11 +264,11 @@ function changeEyeY(value) {
           />
         </a-form-item>
       </template>
-      <h3 class="head-frame">
+      <h3 class="head-frame" v-if="isShowEye">
         眼球控制
         <a-switch v-model:checked="checkedEye" @change="changeCheckedEye" />
       </h3>
-      <template v-if="checkedEye">
+      <template v-if="checkedEye && isShowEye">
         <a-form-item label="左右">
           <a-slider
             v-model:value="lr_eye"
