@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, toRaw, computed } from "vue";
 import * as LAppDefine from "./controller/lappdefine";
-import { message } from "ant-design-vue";
 
 const modeName = ref(LAppDefine.ModelDir[0]);
 const checked = ref(false);
@@ -14,6 +13,7 @@ const checkedMouth = ref(false);
 const mouth = ref(0);
 const textValue = ref("");
 const cookieValue = ref("");
+const loading = ref(false)
 
 const isShowHead = computed(() => {
   const list = ["Mao", "kei_vowels_pro", "Rice", "miara_pro_t03"];
@@ -235,11 +235,12 @@ async function send() {
     return;
   }
   console.log("发送");
+  loading.value = true;
   const result = await fetch("/api/user/audioAI", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      // Authorization: "Bearer YOUR_ACCESS_TOKEN",
+      Cookie: `EGG_SESS=${cookieValue.value}`,
     },
     body: JSON.stringify({
       type: 1,
@@ -259,13 +260,13 @@ async function send() {
       isBroadcast: 1,
     }),
   });
+  loading.value = false
   console.log("结果", result);
 }
 
 function changeCookie() {
-  console.log("cookie:", cookieValue.value);
-  document.cookie = `EGG_SESS=${cookieValue.value}`;
-  message.success("cookie设置成功");
+  console.log(cookieValue.value);
+  alert(`cookie设置成功:EGG_SESS=${cookieValue.value}`);
 }
 </script>
 
@@ -411,6 +412,7 @@ function changeCookie() {
           style="margin-top: 10px"
           type="primary"
           class="btn"
+          :loading="loading"
           @click="send"
           >合成</a-button
         >
