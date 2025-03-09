@@ -741,8 +741,14 @@ export class LAppModel extends CubismUserModel {
       this._model.addParameterValueById(this._idParamEyeBallX, this._dragX); // 加-1到1的值
       this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
     } else {
-      this._model.addParameterValueById(this._idParamEyeBallX, LAppDefine.LR_Eye ); // 加-1到1的值
-      this._model.addParameterValueById(this._idParamEyeBallY, LAppDefine.TB_Eye );
+      this._model.addParameterValueById(
+        this._idParamEyeBallX,
+        LAppDefine.LR_Eye
+      ); // 加-1到1的值
+      this._model.addParameterValueById(
+        this._idParamEyeBallY,
+        LAppDefine.TB_Eye
+      );
     }
 
     // 呼吸
@@ -761,9 +767,18 @@ export class LAppModel extends CubismUserModel {
 
       this._wavFileHandler.update(deltaTimeSeconds);
       value = this._wavFileHandler.getRms();
-
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
-        this._model.addParameterValueById(this._lipSyncIds.at(i), value, 0.8);
+        if (LAppDefine.IsOpenMouthParam) {
+          // 通过拖动调整嘴巴开合
+          this._model.addParameterValueById(this._lipSyncIds.at(i), value, 1);
+          // 0 - 1
+        } else {
+          this._model.addParameterValueById(
+            this._lipSyncIds.at(i),
+            LAppDefine.Mouth,
+            1
+          );
+        }
       }
     }
 

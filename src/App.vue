@@ -9,6 +9,8 @@ const tb = ref(50);
 const checkedEye = ref(false);
 const lr_eye = ref(50);
 const tb_eye = ref(50);
+const checkedMouth = ref(false);
+const mouth = ref(0);
 
 const isShowHead = computed(() => {
   const list = ["Mao", "kei_vowels_pro", "Rice", "miara_pro_t03"];
@@ -17,6 +19,11 @@ const isShowHead = computed(() => {
 
 const isShowEye = computed(() => {
   const list = ["haru", "tororo", "izumi_illust"];
+  return !list.includes(modeName.value);
+});
+
+const isShowMouth = computed(() => {
+  const list = ["kei_vowels_pro", "Mark", "Rice", "miara_pro_t03"];
   return !list.includes(modeName.value);
 });
 
@@ -62,7 +69,7 @@ window.addEventListener("modelSwitched", (event: any) => {
 });
 
 function handleChange(value: string) {
-  console.log(value);
+  console.log("模型名称:", value);
   subdelegate._live2dManager.nextScene(value);
 }
 
@@ -113,9 +120,9 @@ function changeChecked(value) {
   });
 }
 
-function changeCheckedEye(value) {
+function changeCheckedMouth(value) {
   LAppDefine.setDefineOption({
-    IsOpenDragEyeBallParam: !value,
+    IsOpenMouthParam: !value,
   });
 }
 
@@ -195,6 +202,13 @@ function changeEyeY(value) {
       TB_Eye: ratio,
     });
   }
+}
+
+function changeEyeMouth(value) {
+  let ratio = value / 100;
+  LAppDefine.setDefineOption({
+    Mouth: ratio,
+  });
 }
 </script>
 
@@ -284,6 +298,22 @@ function changeEyeY(value) {
             :min="0"
             style="width: 100%"
             @change="changeEyeY"
+          />
+        </a-form-item>
+      </template>
+
+      <h3 class="head-frame" v-if="isShowMouth">
+        嘴唇控制
+        <a-switch v-model:checked="checkedMouth" @change="changeCheckedMouth" />
+      </h3>
+      <template v-if="checkedMouth && isShowMouth">
+        <a-form-item label="开合">
+          <a-slider
+            v-model:value="mouth"
+            :max="100"
+            :min="0"
+            style="width: 100%"
+            @change="changeEyeMouth"
           />
         </a-form-item>
       </template>
