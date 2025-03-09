@@ -30,7 +30,7 @@ export default defineConfig((env: ConfigEnv): UserConfig => {
       },
     },
     root: "./",
-    base: "/live2d-/",
+    base: "/",
     publicDir: "./public",
     resolve: {
       extensions: [".ts", ".js"],
