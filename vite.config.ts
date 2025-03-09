@@ -18,7 +18,16 @@ export default defineConfig((env: ConfigEnv): UserConfig => {
       }),
     ],
     server: {
-      port: 5000,
+      port: 5000, 
+      open: true, // 设置服务启动时是否自动打开浏览器
+      cors: true, // 允许跨域
+      host: '0.0.0.0',
+      proxy: {
+        '/api': {
+          target: 'https://beta.laihua.com',
+          changeOrigin: true
+        }
+      },
     },
     root: "./",
     base: "/",

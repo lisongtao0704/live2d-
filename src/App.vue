@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, toRaw, computed } from "vue";
 import * as LAppDefine from "./controller/lappdefine";
+import { message } from "ant-design-vue";
 
 const modeName = ref(LAppDefine.ModelDir[0]);
 const checked = ref(false);
@@ -12,6 +13,7 @@ const tb_eye = ref(50);
 const checkedMouth = ref(false);
 const mouth = ref(0);
 const textValue = ref("");
+const cookieValue = ref("");
 
 const isShowHead = computed(() => {
   const list = ["Mao", "kei_vowels_pro", "Rice", "miara_pro_t03"];
@@ -66,6 +68,7 @@ window.addEventListener("modelSwitched", (event: any) => {
   model = event.detail;
   states.expressionsList = model?._expressions;
   states.motionList = model?._motions;
+  textValue.value = "";
   console.log("模型ok:", event.detail); // 获取事件附带的数据
 });
 
@@ -118,6 +121,12 @@ function texture() {
 function changeChecked(value) {
   LAppDefine.setDefineOption({
     IsOpenDragAngleParam: !value,
+  });
+}
+
+function changeCheckedEye(value) {
+  LAppDefine.setDefineOption({
+    IsOpenDragEyeBallParam: !value,
   });
 }
 
@@ -216,8 +225,47 @@ function groupsMotios(name, index) {
   model.startMotion(name, index, 2);
 }
 
-function send() {
+async function send() {
+  if (!cookieValue.value) {
+    alert("cookie不能为空");
+    return;
+  }
+  if (!textValue.value) {
+    alert("文本内容不能为空");
+    return;
+  }
   console.log("发送");
+  const result = await fetch("/api/user/audioAI", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // Authorization: "Bearer YOUR_ACCESS_TOKEN",
+    },
+    body: JSON.stringify({
+      type: 1,
+      text: "你好，我是由来画数字平台生成的数字人苏荷",
+      verboseText: textValue.value,
+      speaker: "moxiaozhao_meet_24k",
+      speakerId: 136,
+      speed: 5.5,
+      pitch: 1,
+      style: "general",
+      provider: 6,
+      pause_points: [],
+      sceneType: 0,
+      gender: 1,
+      version: "6.0.0",
+      isNotModified: false,
+      isBroadcast: 1,
+    }),
+  });
+  console.log("结果", result);
+}
+
+function changeCookie() {
+  console.log("cookie:", cookieValue.value);
+  document.cookie = `EGG_SESS=${cookieValue.value}`;
+  message.success("cookie设置成功");
 }
 </script>
 
@@ -344,6 +392,15 @@ function send() {
       </template>
       <div v-if="isShowMouth">
         <div class="head-frame">语音合成</div>
+        <div class="token-frame">
+          <span>cookie(EGG_SESS):</span>
+          <a-input
+            v-model:value="cookieValue"
+            @pressEnter="changeCookie"
+            placeholder="请输入测试环境cookie, enter确认"
+          />
+        </div>
+
         <a-textarea
           v-model:value="textValue"
           :auto-size="{ minRows: 5, maxRows: 5 }"
@@ -413,6 +470,9 @@ function send() {
   font-weight: 500;
   font-size: 15px;
   margin-bottom: 24px;
+}
+.token-frame {
+  margin-bottom: 10px;
 }
 </style>
 
