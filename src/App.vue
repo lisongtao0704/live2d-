@@ -227,21 +227,24 @@ function groupsMotios(name, index) {
 }
 
 async function send() {
-  if (!cookieValue.value) {
-    alert("cookie不能为空");
-    return;
-  }
+  // if (!cookieValue.value) {
+  //   alert("cookie不能为空");
+  //   return;
+  // }
   if (!textValue.value) {
     alert("文本内容不能为空");
     return;
   }
+  // console.log("发送",  `EGG_SESS=${cookieValue.value}`);
+
   console.log("发送");
+  document.cookie = `EGG_SESS=mpBO4aXGGGEYzVmB3smJoRnyAITg4XXx-OKlxDaDMGkDEPnaEtbSO5icjyKAQQEB;`
   loading.value = true;
   const result = await fetch("/api/user/audioAI", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Cookie: `EGG_SESS=${cookieValue.value}`,
+      // Cookie: `EGG_SESS=${cookieValue.value};`,
     },
     body: JSON.stringify({
       type: 1,
@@ -272,8 +275,18 @@ async function send() {
   console.log("结果", data.data.filename);
 }
 
-function changeCookie() {
+// <div class="token-frame">
+//           <span>cookie(EGG_SESS):</span>
+//           <a-input
+//             v-model:value="cookieValue"
+//             @pressEnter="changeCookie"
+//             placeholder="请输入测试环境cookie, enter确认"
+//           />
+//         </div>
+
+function changeCookie(value) {
   console.log(cookieValue.value);
+  // document.cookie = `EGG_SESS=${cookieValue.value}`
   alert(`cookie设置成功:EGG_SESS=${cookieValue.value}`);
 }
 </script>
@@ -401,14 +414,6 @@ function changeCookie() {
       </template>
       <div v-if="isShowMouth">
         <div class="head-frame">语音合成</div>
-        <div class="token-frame">
-          <span>cookie(EGG_SESS):</span>
-          <a-input
-            v-model:value="cookieValue"
-            @pressEnter="changeCookie"
-            placeholder="请输入测试环境cookie, enter确认"
-          />
-        </div>
 
         <a-textarea
           v-model:value="textValue"
