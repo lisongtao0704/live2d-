@@ -1,0 +1,107 @@
+{
+  "Version": 3,
+  "Name": "qiye_7",
+  "FileReferences": {
+    "Moc": "qiye_7.moc3",
+    "Textures": [
+      "textures/texture_00.png"
+    ],
+    "DisplayInfo": "qiye_7.cdi3.json",
+    "Physics": "qiye_7.physics3.json",
+    "motion": {
+      "complete": [
+        {
+          "File": "motion/complete.motion3.json"
+        }
+      ],
+      "effect": [
+        {
+          "File": "motion/effect.motion3.json"
+        }
+      ],
+      "home": [
+        {
+          "File": "motion/home.motion3.json"
+        }
+      ],
+      "idle": [
+        {
+          "File": "motion/idle.motion3.json"
+        }
+      ],
+      "login": [
+        {
+          "File": "motion/login.motion3.json"
+        }
+      ],
+      "mail": [
+        {
+          "File": "motion/mail.motion3.json"
+        }
+      ],
+      "main_1": [
+        {
+          "File": "motion/main_1.motion3.json"
+        }
+      ],
+      "main_2": [
+        {
+          "File": "motion/main_2.motion3.json"
+        }
+      ],
+      "main_3": [
+        {
+          "File": "motion/main_3.motion3.json"
+        }
+      ],
+      "mission": [
+        {
+          "File": "motion/mission.motion3.json"
+        }
+      ],
+      "mission_complete": [
+        {
+          "File": "motion/mission_complete.motion3.json"
+        }
+      ],
+      "touch_body": [
+        {
+          "File": "motion/touch_body.motion3.json"
+        }
+      ],
+      "touch_head": [
+        {
+          "File": "motion/touch_head.motion3.json"
+        }
+      ],
+      "touch_special": [
+        {
+          "File": "motion/touch_special.motion3.json"
+        }
+      ],
+      "wedding": [
+        {
+          "File": "motion/wedding.motion3.json"
+        }
+      ]
+    },
+    "Expressions": []
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": [
+        "ParamEyeLOpen",
+        "ParamEyeROpen"
+      ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "LipSync",
+      "Ids": [
+        "ParamMouthOpenY"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "Version": 3,
+  "Name": "xinzexi_3",
+  "FileReferences": {
+    "Moc": "xinzexi_3.moc3",
+    "Textures": [
+      "textures/texture_00.png"
+    ],
+    "DisplayInfo": null,
+    "Physics": "xinzexi_3.physics3.json",
+    "motion": {
+      "complete": [
+        {
+          "File": "motion/complete.motion3.json"
+        }
+      ],
+      "effect": [
+        {
+          "File": "motion/effect.motion3.json"
+        }
+      ],
+      "home": [
+        {
+          "File": "motion/home.motion3.json"
+        }
+      ],
+      "idle": [
+        {
+          "File": "motion/idle.motion3.json"
+        }
+      ],
+      "login": [
+        {
+          "File": "motion/login.motion3.json"
+        }
+      ],
+      "mail": [
+        {
+          "File": "motion/mail.motion3.json"
+        }
+      ],
+      "main_1": [
+        {
+          "File": "motion/main_1.motion3.json"
+        }
+      ],
+      "main_2": [
+        {
+          "File": "motion/main_2.motion3.json"
+        }
+      ],
+      "main_3": [
+        {
+          "File": "motion/main_3.motion3.json"
+        }
+      ],
+      "mission": [
+        {
+          "File": "motion/mission.motion3.json"
+        }
+      ],
+      "mission_complete": [
+        {
+          "File": "motion/mission_complete.motion3.json"
+        }
+      ],
+      "touch_body": [
+        {
+          "File": "motion/touch_body.motion3.json"
+        }
+      ],
+      "touch_drag1": [
+        {
+          "File": "motion/touch_drag1.motion3.json"
+        }
+      ],
+      "touch_drag2": [
+        {
+          "File": "motion/touch_drag2.motion3.json"
+        }
+      ],
+      "touch_drag4": [
+        {
+          "File": "motion/touch_drag4.motion3.json"
+        }
+      ],
+      "touch_drag5": [
+        {
+          "File": "motion/touch_drag5.motion3.json"
+        }
+      ],
+      "touch_drag6": [
+        {
+          "File": "motion/touch_drag6.motion3.json"
+        }
+      ],
+      "touch_drag7": [
+        {
+          "File": "motion/touch_drag7.motion3.json"
+        }
+      ],
+      "touch_head": [
+        {
+          "File": "motion/touch_head.motion3.json"
+        }
+      ],
+      "touch_idle1": [
+        {
+          "File": "motion/touch_idle1.motion3.json"
+        }
+      ],
+      "touch_special": [
+        {
+          "File": "motion/touch_special.motion3.json"
+        }
+      ],
+      "wedding": [
+        {
+          "File": "motion/wedding.motion3.json"
+        }
+      ]
+    },
+    "Expressions": []
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": [
+        "ParamEyeLOpen",
+        "ParamEyeROpen"
+      ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "LipSync",
+      "Ids": [
+        "ParamMouthOpenY"
+      ]
+    }
+  ]
+}
