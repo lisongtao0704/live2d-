@@ -40,6 +40,8 @@ export const ModelDir: string[] = [
   "Mark",
   "Rice",
   "miara_pro_t03",
+  "aierdeliqi_4",
+  // "adaerbote_3",
   // "fense",
 ];
 
